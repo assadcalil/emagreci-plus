@@ -1,0 +1,425 @@
+.avatar-container {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.avatar-header h3 {
+  margin: 0 0 0.3rem 0;
+  font-size: 1.4rem;
+}
+
+.avatar-subtitle {
+  margin: 0 0 2rem 0;
+  opacity: 0.8;
+  font-size: 0.95rem;
+}
+
+.avatar-display {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+  margin-bottom: 2rem;
+}
+
+/* Avatar Body */
+.avatar-body {
+  position: relative;
+  width: 120px;
+  height: 200px;
+  transition: all 0.8s ease;
+}
+
+.avatar-head {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+  border-radius: 50%;
+  margin: 0 auto 10px;
+  position: relative;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.avatar-face {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+}
+
+.avatar-eyes {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  font-size: 0.8rem;
+  margin-bottom: 5px;
+}
+
+.avatar-smile {
+  font-size: 1.2rem;
+}
+
+.avatar-torso {
+  width: 80px;
+  height: 90px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 20px 20px 30px 30px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.8s ease;
+}
+
+.torso-inner {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+}
+
+.avatar-arms {
+  position: absolute;
+  top: 80px;
+  left: 0;
+  right: 0;
+}
+
+.arm {
+  position: absolute;
+  width: 20px;
+  height: 60px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 10px;
+  transition: all 0.8s ease;
+}
+
+.arm.left {
+  left: 5px;
+  transform: rotate(-10deg);
+}
+
+.arm.right {
+  right: 5px;
+  transform: rotate(10deg);
+}
+
+.avatar-legs {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+}
+
+.leg {
+  width: 25px;
+  height: 50px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 10px;
+  transition: all 0.8s ease;
+}
+
+/* Fases do Avatar */
+.phase-1 .avatar-torso {
+  width: 100px;
+  height: 100px;
+}
+
+.phase-1 .arm {
+  width: 25px;
+}
+
+.phase-1 .leg {
+  width: 30px;
+}
+
+.phase-2 .avatar-torso {
+  width: 90px;
+  height: 95px;
+}
+
+.phase-2 .arm {
+  width: 23px;
+}
+
+.phase-2 .leg {
+  width: 28px;
+}
+
+.phase-3 .avatar-torso {
+  width: 80px;
+  height: 90px;
+}
+
+.phase-4 .avatar-torso {
+  width: 70px;
+  height: 85px;
+}
+
+.phase-4 .arm {
+  width: 18px;
+}
+
+.phase-4 .leg {
+  width: 22px;
+}
+
+.phase-5 .avatar-torso {
+  width: 60px;
+  height: 80px;
+}
+
+.phase-5 .arm {
+  width: 16px;
+}
+
+.phase-5 .leg {
+  width: 20px;
+}
+
+/* Efeitos Visuais */
+.transformation-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 150%;
+  height: 150%;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: glowPulse 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.achievement-particles {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
+}
+
+.achievement-particles span {
+  position: absolute;
+  animation: particleFloat 2s ease-in-out infinite;
+}
+
+.achievement-particles span:nth-child(1) {
+  left: -30px;
+  animation-delay: 0s;
+}
+
+.achievement-particles span:nth-child(2) {
+  left: 0;
+  animation-delay: 0.3s;
+}
+
+.achievement-particles span:nth-child(3) {
+  left: 30px;
+  animation-delay: 0.6s;
+}
+
+/* Progress Ring */
+.progress-ring {
+  position: relative;
+  width: 150px;
+  height: 150px;
+}
+
+.progress-ring svg {
+  transform: rotate(-90deg);
+}
+
+.progress-ring-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.2);
+  stroke-width: 8;
+}
+
+.progress-ring-fill {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 283;
+  transition: stroke-dashoffset 1s ease;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.progress-value {
+  display: block;
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.progress-label {
+  display: block;
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* Stats */
+.avatar-stats {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+}
+
+.stat-icon {
+  font-size: 1.5rem;
+}
+
+.stat-item strong {
+  display: block;
+  font-size: 1.1rem;
+}
+
+.stat-item small {
+  display: block;
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+/* Motivational Banner */
+.motivational-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  padding: 1rem;
+  border-radius: 15px;
+  margin-bottom: 1.5rem;
+  animation: slideIn 0.5s ease-out;
+}
+
+.motivation-icon {
+  font-size: 1.5rem;
+}
+
+.motivational-banner p {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+/* Milestones */
+.avatar-milestones {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.milestone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.8rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  opacity: 0.5;
+  transition: all 0.3s;
+}
+
+.milestone.achieved {
+  opacity: 1;
+  background: rgba(46, 204, 113, 0.3);
+  transform: scale(1.1);
+  animation: achievementPop 0.5s ease-out;
+}
+
+.milestone span {
+  font-size: 1.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.milestone small {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Animations */
+@keyframes glowPulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+@keyframes particleFloat {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+    opacity: 0.5;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes achievementPop {
+  0% {
+    transform: scale(0.5);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+@media (max-width: 600px) {
+  .avatar-display {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .avatar-stats {
+    flex-wrap: wrap;
+  }
+
+  .avatar-milestones {
+    flex-wrap: wrap;
+  }
+}
