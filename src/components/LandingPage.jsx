@@ -1,8 +1,24 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './LandingPage.css'
 
-const LandingPage = ({ onStart }) => {
+const LandingPage = ({ onStart, onLogin }) => {
   const [showPrivacy, setShowPrivacy] = useState(false)
+  const [hasExistingProfile, setHasExistingProfile] = useState(false)
+
+  // Check if user has an existing profile
+  useEffect(() => {
+    const savedProfile = localStorage.getItem('profile')
+    if (savedProfile) {
+      try {
+        const profile = JSON.parse(savedProfile)
+        if (profile && profile.nome) {
+          setHasExistingProfile(true)
+        }
+      } catch (e) {
+        // Invalid profile data
+      }
+    }
+  }, [])
 
   const testimonials = [
     {
@@ -107,6 +123,11 @@ const LandingPage = ({ onStart }) => {
           <button className="hero-cta" onClick={onStart}>
             Começar Agora - Grátis por 3 Dias
           </button>
+          {hasExistingProfile && onLogin && (
+            <button className="hero-login" onClick={onLogin}>
+              Já tenho conta - Entrar
+            </button>
+          )}
           <p className="hero-note">Sem cartão de crédito. Cancele quando quiser.</p>
         </div>
         <div className="hero-visual">

@@ -112,14 +112,41 @@ function App() {
     return () => clearInterval(interval)
   }, [reminders, toast])
 
+  // Handler for returning users to login
+  const handleLogin = () => {
+    // Restore profile from localStorage
+    const savedProfile = localStorage.getItem('profile')
+    if (savedProfile) {
+      try {
+        const profileData = JSON.parse(savedProfile)
+        if (profileData && profileData.nome) {
+          setProfile(profileData)
+          setAnswers(profileData)
+          setStarted(true)
+          setQuizCompleted(true)
+          setShowLanding(false)
+          if (!isSubscribed()) {
+            setShowPaywall(true)
+          }
+          toast.success(`Bem-vindo de volta, ${profileData.nome?.split(' ')[0]}!`)
+        }
+      } catch (e) {
+        toast.error('Erro ao recuperar perfil. Tente novamente.')
+      }
+    }
+  }
+
   // Landing Page (para novos visitantes)
   if (!started && showLanding && !profile) {
     return (
       <>
-        <LandingPage onStart={() => {
-          setShowLanding(false)
-          setStarted(true)
-        }} />
+        <LandingPage
+          onStart={() => {
+            setShowLanding(false)
+            setStarted(true)
+          }}
+          onLogin={handleLogin}
+        />
         <ToastContainer toasts={toast.toasts} removeToast={toast.removeToast} />
       </>
     )
@@ -293,13 +320,24 @@ function App() {
 
   const handleLogout = () => {
     if (window.confirm('Tem certeza que deseja sair? Seus dados serão mantidos.')) {
+      // Reset all state to force return to landing/login screen
       setStarted(false)
       setQuizCompleted(false)
       setShowPaywall(false)
       setShowLanding(true)
       setCurrentQuestion(0)
       setAnswers({})
+
+      // Temporarily clear profile to trigger landing screen
+      // User data remains in localStorage, will be restored on next login
+      setProfile(null)
+
       toast.info('Você saiu da sua conta')
+
+      // Reload after brief delay to ensure clean state
+      setTimeout(() => {
+        window.location.reload()
+      }, 500)
     }
   }
 

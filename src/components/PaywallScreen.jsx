@@ -1,17 +1,46 @@
 import { useState } from 'react'
 import { PLANS } from '../hooks/useSubscription'
+import { useStripe } from '../hooks/useStripe'
 import './PaywallScreen.css'
 
-function PaywallScreen({ onSelectPlan, onStartTrial, trialUsed, onClose }) {
+function PaywallScreen({ onSelectPlan, onStartTrial, trialUsed, onClose, userEmail }) {
   const [selectedPlan, setSelectedPlan] = useState('pro')
+  const [billingPeriod, setBillingPeriod] = useState('monthly')
   const [isProcessing, setIsProcessing] = useState(false)
+  const [showStripeInfo, setShowStripeInfo] = useState(false)
+
+  const { createCheckoutSession, isLoading: stripeLoading, error: stripeError } = useStripe()
 
   const handleSubscribe = async () => {
     setIsProcessing(true)
-    // Simular processamento de pagamento
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    onSelectPlan(selectedPlan)
-    setIsProcessing(false)
+
+    try {
+      // Criar sessão de checkout no Stripe
+      const result = await createCheckoutSession(selectedPlan, billingPeriod, userEmail)
+
+      if (result.success) {
+        // Em produção, o usuário seria redirecionado para o Stripe
+        console.log('Checkout configurado:', result)
+
+        // Simular processamento
+        await new Promise(resolve => setTimeout(resolve, 1000))
+
+        // Chamar callback com dados do Stripe
+        onSelectPlan(selectedPlan, {
+          subscriptionId: `sub_${Date.now()}`,
+          customerId: `cus_${Date.now()}`,
+          billingPeriod
+        })
+
+        setShowStripeInfo(true)
+      } else {
+        console.error('Erro no checkout:', result.error)
+      }
+    } catch (err) {
+      console.error('Erro ao processar assinatura:', err)
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
   const handleTrial = async () => {
@@ -20,6 +49,25 @@ function PaywallScreen({ onSelectPlan, onStartTrial, trialUsed, onClose }) {
     await new Promise(resolve => setTimeout(resolve, 1000))
     onStartTrial()
     setIsProcessing(false)
+  }
+
+  const getPlanPrice = (plan) => {
+    if (billingPeriod === 'yearly') {
+      const yearlyPrice = plan.yearlyPrice
+      const monthlyEquivalent = (yearlyPrice / 12).toFixed(2)
+      return {
+        display: monthlyEquivalent.replace('.', ','),
+        total: yearlyPrice.toFixed(2).replace('.', ','),
+        period: 'mês',
+        note: `R$ ${yearlyPrice.toFixed(2).replace('.', ',')} cobrado anualmente`
+      }
+    }
+    return {
+      display: plan.price.toFixed(2).replace('.', ','),
+      total: plan.price.toFixed(2).replace('.', ','),
+      period: plan.period,
+      note: null
+    }
   }
 
   return (
@@ -39,59 +87,89 @@ function PaywallScreen({ onSelectPlan, onStartTrial, trialUsed, onClose }) {
           <p>Escolha o plano ideal para sua jornada de transformação</p>
         </div>
 
+        {/* Toggle Mensal/Anual */}
+        <div className="billing-toggle">
+          <button
+            className={`toggle-btn ${billingPeriod === 'monthly' ? 'active' : ''}`}
+            onClick={() => setBillingPeriod('monthly')}
+          >
+            Mensal
+          </button>
+          <button
+            className={`toggle-btn ${billingPeriod === 'yearly' ? 'active' : ''}`}
+            onClick={() => setBillingPeriod('yearly')}
+          >
+            Anual
+            <span className="discount-badge">-17%</span>
+          </button>
+        </div>
+
         {/* Planos */}
         <div className="plans-container">
-          {Object.values(PLANS).map(plan => (
-            <div
-              key={plan.id}
-              className={`plan-card ${selectedPlan === plan.id ? 'selected' : ''} ${plan.popular ? 'popular' : ''}`}
-              onClick={() => setSelectedPlan(plan.id)}
-            >
-              {plan.popular && (
-                <div className="popular-badge">MAIS POPULAR</div>
-              )}
+          {Object.values(PLANS).map(plan => {
+            const priceInfo = getPlanPrice(plan)
+            return (
+              <div
+                key={plan.id}
+                className={`plan-card ${selectedPlan === plan.id ? 'selected' : ''} ${plan.popular ? 'popular' : ''}`}
+                onClick={() => setSelectedPlan(plan.id)}
+              >
+                {plan.popular && (
+                  <div className="popular-badge">MAIS POPULAR</div>
+                )}
 
-              <div className="plan-header" style={{ background: plan.color }}>
-                <span className="plan-icon">{plan.icon}</span>
-                <h3>{plan.name}</h3>
-              </div>
+                <div className="plan-header" style={{ background: plan.color }}>
+                  <span className="plan-icon">{plan.icon}</span>
+                  <h3>{plan.name}</h3>
+                </div>
 
-              <div className="plan-price">
-                <span className="currency">R$</span>
-                <span className="amount">{plan.price.toFixed(2).replace('.', ',')}</span>
-                <span className="period">/{plan.period}</span>
-              </div>
+                <div className="plan-price">
+                  <span className="currency">R$</span>
+                  <span className="amount">{priceInfo.display}</span>
+                  <span className="period">/{priceInfo.period}</span>
+                  {priceInfo.note && (
+                    <div className="billing-note">{priceInfo.note}</div>
+                  )}
+                </div>
 
-              <ul className="plan-features">
-                {plan.highlights.map((feature, i) => (
-                  <li key={i}>
-                    <span className="check">✓</span>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
+                <ul className="plan-features">
+                  {plan.highlights.map((feature, i) => (
+                    <li key={i}>
+                      <span className="check">✓</span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
 
-              <div className="plan-selector">
-                <div className={`radio-btn ${selectedPlan === plan.id ? 'checked' : ''}`}>
-                  {selectedPlan === plan.id && <span className="radio-inner"></span>}
+                <div className="plan-selector">
+                  <div className={`radio-btn ${selectedPlan === plan.id ? 'checked' : ''}`}>
+                    {selectedPlan === plan.id && <span className="radio-inner"></span>}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
+
+        {/* Informação do Stripe */}
+        {stripeError && (
+          <div className="stripe-error">
+            <span>⚠️</span> {stripeError}
+          </div>
+        )}
 
         {/* Ações */}
         <div className="paywall-actions">
           <button
             className="btn-subscribe"
             onClick={handleSubscribe}
-            disabled={isProcessing}
+            disabled={isProcessing || stripeLoading}
           >
-            {isProcessing ? (
+            {isProcessing || stripeLoading ? (
               <span className="loading-spinner"></span>
             ) : (
               <>
-                Assinar {PLANS[selectedPlan].name} - R$ {PLANS[selectedPlan].price.toFixed(2).replace('.', ',')}
+                Assinar {PLANS[selectedPlan].name} - R$ {getPlanPrice(PLANS[selectedPlan]).display}/mês
               </>
             )}
           </button>
@@ -105,6 +183,15 @@ function PaywallScreen({ onSelectPlan, onStartTrial, trialUsed, onClose }) {
               Experimentar 3 dias grátis (Plano Básico)
             </button>
           )}
+
+          <div className="payment-methods">
+            <span>Pagamento seguro via</span>
+            <div className="payment-icons">
+              <span className="stripe-badge">Stripe</span>
+              <span>💳</span>
+              <span>📱</span>
+            </div>
+          </div>
 
           <p className="terms">
             Ao assinar, você concorda com nossos <a href="#">Termos de Uso</a> e <a href="#">Política de Privacidade</a>
@@ -142,6 +229,24 @@ function PaywallScreen({ onSelectPlan, onStartTrial, trialUsed, onClose }) {
             </div>
           </div>
         </div>
+
+        {/* Stripe Info Modal */}
+        {showStripeInfo && (
+          <div className="stripe-info-modal">
+            <div className="stripe-info-content">
+              <h3>✅ Integração Stripe Configurada</h3>
+              <p>Para ativar pagamentos reais, configure as variáveis de ambiente:</p>
+              <pre>
+{`VITE_STRIPE_PUBLIC_KEY=pk_test_xxx
+VITE_STRIPE_BASIC_MONTHLY=price_xxx
+VITE_STRIPE_PRO_MONTHLY=price_xxx
+VITE_STRIPE_PREMIUM_MONTHLY=price_xxx`}
+              </pre>
+              <p>Acesse o <a href="https://dashboard.stripe.com" target="_blank" rel="noopener noreferrer">Dashboard do Stripe</a> para criar os produtos e preços.</p>
+              <button onClick={() => setShowStripeInfo(false)}>Entendi</button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
