@@ -57,9 +57,17 @@ function PaywallScreen({ onSelectPlan, onStartTrial, trialUsed, onClose }) {
               </div>
 
               <div className="plan-price">
-                <span className="currency">R$</span>
-                <span className="amount">{plan.price.toFixed(2).replace('.', ',')}</span>
-                <span className="period">/{plan.period}</span>
+                {plan.originalPrice && (
+                  <div className="original-price">
+                    <span className="price-strikethrough">R$ {plan.originalPrice.toFixed(2).replace('.', ',')}</span>
+                    <span className="discount-badge">-{Math.round((1 - plan.price / plan.originalPrice) * 100)}%</span>
+                  </div>
+                )}
+                <div className="current-price">
+                  <span className="currency">R$</span>
+                  <span className="amount">{plan.price.toFixed(2).replace('.', ',')}</span>
+                  <span className="period">/{plan.period}</span>
+                </div>
               </div>
 
               <ul className="plan-features">

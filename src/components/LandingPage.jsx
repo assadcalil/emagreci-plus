@@ -200,10 +200,13 @@ const LandingPage = ({ onStart }) => {
       {/* Pricing Preview */}
       <section className="landing-pricing">
         <h2 className="section-title">Planos Acessíveis</h2>
+        <p className="promo-banner">🔥 PROMOÇÃO DE LANÇAMENTO - ECONOMIZE ATÉ 30%</p>
         <div className="pricing-cards">
           <div className="pricing-card">
             <h3>Básico</h3>
+            <div className="price-original">R$ 29,90</div>
             <div className="price">R$ 19,90<span>/mês</span></div>
+            <div className="savings">Economize R$ 10/mês</div>
             <ul>
               <li>✓ Registro de doses</li>
               <li>✓ Controle de peso</li>
@@ -213,7 +216,9 @@ const LandingPage = ({ onStart }) => {
           <div className="pricing-card featured">
             <div className="popular-badge">Mais Popular</div>
             <h3>Pro</h3>
+            <div className="price-original">R$ 59,90</div>
             <div className="price">R$ 39,90<span>/mês</span></div>
+            <div className="savings">Economize R$ 20/mês</div>
             <ul>
               <li>✓ Tudo do Básico</li>
               <li>✓ Medidas corporais</li>
@@ -224,7 +229,9 @@ const LandingPage = ({ onStart }) => {
           </div>
           <div className="pricing-card">
             <h3>Premium</h3>
+            <div className="price-original">R$ 99,90</div>
             <div className="price">R$ 69,90<span>/mês</span></div>
+            <div className="savings">Economize R$ 30/mês</div>
             <ul>
               <li>✓ Tudo do Pro</li>
               <li>✓ Avatar de transformação</li>
