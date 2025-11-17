@@ -16,28 +16,28 @@ import NutritionTracker from './components/NutritionTracker'
 import InjectionMap from './components/InjectionMap'
 import ProgressPhotos from './components/ProgressPhotos'
 import LandingPage from './components/LandingPage'
+import AuthScreen from './components/AuthScreen'
 import { ToastContainer } from './components/Toast'
 import { useToast } from './hooks/useToast'
-import { useSubscription } from './hooks/useSubscription'
-import { quizQuestions } from './data/quizData'
+import { useAuth } from './hooks/useAuth'
 import {
-  useProfile,
-  useDoses,
-  useWeights,
-  useMeasurements,
-  useSideEffects,
-  useGoals,
-  useReminders,
-  useNutrition,
-  useProgressPhotos
-} from './hooks/useLocalStorage'
+  useSupabaseProfile,
+  useSupabaseDoses,
+  useSupabaseWeights,
+  useSupabaseMeasurements,
+  useSupabaseSideEffects,
+  useSupabaseGoals,
+  useSupabaseSubscription
+} from './hooks/useSupabaseData'
+import { quizQuestions } from './data/quizData'
+import { PLANS } from './hooks/useSubscription'
 import './App.css'
 
 function App() {
-  const [started, setStarted] = useState(false)
+  const [showLanding, setShowLanding] = useState(true)
+  const [showAuth, setShowAuth] = useState(false)
   const [quizCompleted, setQuizCompleted] = useState(false)
   const [showPaywall, setShowPaywall] = useState(false)
-  const [showLanding, setShowLanding] = useState(true)
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState({})
 
@@ -55,143 +55,209 @@ function App() {
   // View state
   const [activeView, setActiveView] = useState('dashboard')
 
-  // Hooks de dados
-  const [profile, setProfile] = useProfile()
-  const { doses, addDose } = useDoses()
-  const { weights, addWeight } = useWeights()
-  const { measurements, addMeasurement } = useMeasurements()
-  const { sideEffects, addSideEffect } = useSideEffects()
-  const { goals, addGoal, toggleGoal, deleteGoal } = useGoals()
-  const { reminders, updateReminders } = useReminders()
-  const { addNutritionEntry, getTodayNutrition } = useNutrition()
-  const { photos, addPhoto, getMonthlyCount } = useProgressPhotos()
+  // Authentication
+  const {
+    user,
+    loading: authLoading,
+    error: authError,
+    signUp,
+    signIn,
+    signOut,
+    resetPassword,
+    isAuthenticated
+  } = useAuth()
 
-  // Subscription
-  const { subscribe, startTrial, checkAccess, isSubscribed, trialUsed, getCurrentPlan, getDaysRemaining, subscription } = useSubscription()
+  // Supabase Data Hooks (only active when user is authenticated)
+  const { profile, updateProfile, loading: profileLoading } = useSupabaseProfile(user?.id)
+  const { doses, addDose } = useSupabaseDoses(user?.id)
+  const { weights, addWeight } = useSupabaseWeights(user?.id)
+  const { measurements, addMeasurement } = useSupabaseMeasurements(user?.id)
+  const { sideEffects, addSideEffect } = useSupabaseSideEffects(user?.id)
+  const { goals, addGoal, toggleGoal, deleteGoal } = useSupabaseGoals(user?.id)
+  const {
+    subscription,
+    subscribe,
+    startTrial,
+    cancelSubscription,
+    isSubscribed,
+    getDaysRemaining
+  } = useSupabaseSubscription(user?.id)
 
   // Toast notifications
   const toast = useToast()
 
-  // Carregar perfil ao iniciar
+  // Check if user has completed profile setup
   useEffect(() => {
-    if (profile && !quizCompleted) {
-      const timer = setTimeout(() => {
-        setAnswers(profile)
-        setStarted(true)
+    if (isAuthenticated && profile) {
+      // User is logged in and has profile
+      setShowLanding(false)
+      setShowAuth(false)
+
+      if (profile.nome && profile.tipo_caneta) {
+        // Profile is complete
         setQuizCompleted(true)
-        setShowLanding(false)
+        setAnswers({
+          nome: profile.nome,
+          idade: profile.idade,
+          altura: profile.altura,
+          pesoAtual: profile.peso_atual,
+          tipoCaneta: profile.tipo_caneta,
+          objetivo: profile.objetivo,
+          experiencia: profile.experiencia
+        })
+
+        // Check subscription
         if (!isSubscribed()) {
           setShowPaywall(true)
         }
-      }, 0)
-      return () => clearTimeout(timer)
-    }
-  }, [profile, quizCompleted, isSubscribed])
-
-  // Verificar lembretes
-  useEffect(() => {
-    if (!reminders.enabled) return
-
-    const checkReminder = () => {
-      const now = new Date()
-      const currentDay = now.getDay()
-      const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
-
-      if (currentDay === reminders.dayOfWeek && currentTime === reminders.time) {
-        if (Notification.permission === 'granted') {
-          new Notification('Emagreci+ - Lembrete', {
-            body: 'Hora de aplicar sua dose! 💉',
-            icon: '💉'
-          })
-        }
-        toast.info('Lembrete: Hora de aplicar sua dose!')
+      } else {
+        // Profile incomplete, show quiz
+        setQuizCompleted(false)
       }
     }
+  }, [isAuthenticated, profile, isSubscribed])
 
-    const interval = setInterval(checkReminder, 60000)
-    return () => clearInterval(interval)
-  }, [reminders, toast])
+  // Handle authentication
+  const handleAuth = async (mode, data) => {
+    if (mode === 'login') {
+      const result = await signIn(data.email, data.password)
+      if (result.success) {
+        toast.success('Bem-vindo de volta!')
+        setShowAuth(false)
+      }
+      return result
+    }
 
-  // Handler for returning users to login
-  const handleLogin = () => {
-    // Restore profile from localStorage
-    const savedProfile = localStorage.getItem('profile')
-    if (savedProfile) {
-      try {
-        const profileData = JSON.parse(savedProfile)
-        if (profileData && profileData.nome) {
-          setProfile(profileData)
-          setAnswers(profileData)
-          setStarted(true)
-          setQuizCompleted(true)
-          setShowLanding(false)
-          if (!isSubscribed()) {
-            setShowPaywall(true)
-          }
-          toast.success(`Bem-vindo de volta, ${profileData.nome?.split(' ')[0]}!`)
-        }
-      } catch (e) {
-        toast.error('Erro ao recuperar perfil. Tente novamente.')
+    if (mode === 'signup') {
+      const result = await signUp(data.email, data.password, { nome: data.nome })
+      if (result.success) {
+        toast.success('Conta criada com sucesso!')
+        setShowAuth(false)
+      }
+      return result
+    }
+
+    if (mode === 'forgot') {
+      const result = await resetPassword(data.email)
+      if (result.success) {
+        toast.success('Email de recuperação enviado!')
+      }
+      return result
+    }
+
+    return { success: false, error: 'Modo inválido' }
+  }
+
+  // Handle logout
+  const handleLogout = async () => {
+    if (window.confirm('Tem certeza que deseja sair?')) {
+      const result = await signOut()
+      if (result.success) {
+        setShowLanding(true)
+        setShowAuth(false)
+        setQuizCompleted(false)
+        setShowPaywall(false)
+        setCurrentQuestion(0)
+        setAnswers({})
+        toast.info('Você saiu da sua conta')
       }
     }
   }
 
-  // Landing Page (para novos visitantes)
-  if (!started && showLanding && !profile) {
+  // Check feature access based on subscription
+  const checkAccess = (feature) => {
+    if (!subscription || !isSubscribed()) return false
+
+    const plan = PLANS[subscription.plan_id]
+    if (!plan) return false
+
+    return plan.features[feature]
+  }
+
+  const getCurrentPlan = () => {
+    if (!subscription?.plan_id) return null
+    return PLANS[subscription.plan_id]
+  }
+
+  // Loading screen
+  if (authLoading || (isAuthenticated && profileLoading)) {
+    return (
+      <div className="loading-screen">
+        <div className="loading-content">
+          <div className="loading-icon">💊</div>
+          <h2>Emagreci+</h2>
+          <div className="loading-spinner-large"></div>
+          <p>Carregando seus dados...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Landing Page
+  if (showLanding && !isAuthenticated) {
     return (
       <>
         <LandingPage
           onStart={() => {
             setShowLanding(false)
-            setStarted(true)
+            setShowAuth(true)
           }}
-          onLogin={handleLogin}
+          onLogin={() => {
+            setShowLanding(false)
+            setShowAuth(true)
+          }}
         />
         <ToastContainer toasts={toast.toasts} removeToast={toast.removeToast} />
       </>
     )
   }
 
-  // Tela inicial simples (se pular landing)
-  if (!started) {
+  // Auth Screen (Login/Signup)
+  if (showAuth && !isAuthenticated) {
     return (
-      <div className="splash-screen">
-        <div className="splash-content">
-          <div className="logo-container">
-            <div className="logo-icon">💉</div>
-            <h1 className="app-name">Emagreci+</h1>
-          </div>
-          <p className="tagline">Sua jornada de transformação começa aqui</p>
-          <div className="feature-highlights">
-            <span>📊 Gráficos de progresso</span>
-            <span>🎯 Metas personalizadas</span>
-            <span>🪞 Avatar de Transformação</span>
-          </div>
-          <button className="btn-primary btn-large" onClick={() => setStarted(true)}>
-            Começar Agora
-          </button>
-          <p className="splash-subtitle">Mais de 10.000 usuários transformados</p>
-        </div>
+      <>
+        <AuthScreen
+          onAuth={handleAuth}
+          loading={authLoading}
+          error={authError}
+        />
         <ToastContainer toasts={toast.toasts} removeToast={toast.removeToast} />
-      </div>
+      </>
     )
   }
 
-  // Quiz em andamento
-  if (!quizCompleted) {
+  // Quiz for new users
+  if (isAuthenticated && !quizCompleted) {
     const question = quizQuestions[currentQuestion]
 
-    const handleNext = () => {
+    const handleNext = async () => {
       if (currentQuestion < quizQuestions.length - 1) {
         setCurrentQuestion(currentQuestion + 1)
       } else {
+        // Save profile to Supabase
         try {
-          setProfile(answers)
-          setQuizCompleted(true)
-          setShowPaywall(true)
-          toast.success('Perfil criado com sucesso!')
-        } catch {
-          toast.error('Erro ao salvar perfil. Tente novamente.')
+          const profileData = {
+            nome: answers.nome || user?.user_metadata?.nome || '',
+            idade: parseInt(answers.idade) || null,
+            altura: parseFloat(answers.altura) || null,
+            peso_atual: parseFloat(answers.pesoAtual) || null,
+            peso_inicial: parseFloat(answers.pesoAtual) || null,
+            tipo_caneta: answers.tipoCaneta || '',
+            objetivo: answers.objetivo || '',
+            experiencia: answers.experiencia || ''
+          }
+
+          const result = await updateProfile(profileData)
+          if (result.success) {
+            setQuizCompleted(true)
+            setShowPaywall(true)
+            toast.success('Perfil criado com sucesso!')
+          } else {
+            toast.error('Erro ao salvar perfil. Tente novamente.')
+          }
+        } catch (err) {
+          console.error('Error saving profile:', err)
+          toast.error('Erro ao salvar perfil')
         }
       }
     }
@@ -225,22 +291,30 @@ function App() {
     )
   }
 
-  // Paywall Screen (mostrar quando solicitado, mesmo durante trial)
-  if (showPaywall) {
+  // Paywall Screen
+  if (showPaywall && isAuthenticated) {
     return (
       <>
         <PaywallScreen
-          onSelectPlan={(planId) => {
-            subscribe(planId)
-            setShowPaywall(false)
-            toast.success(`Bem-vindo ao plano ${planId}! 🎉`)
+          onSelectPlan={async (planId, stripeData = {}) => {
+            const result = await subscribe(planId, stripeData)
+            if (result.success) {
+              setShowPaywall(false)
+              toast.success(`Bem-vindo ao plano ${PLANS[planId]?.name}! 🎉`)
+            } else {
+              toast.error('Erro ao ativar plano. Tente novamente.')
+            }
           }}
-          onStartTrial={() => {
-            startTrial()
-            setShowPaywall(false)
-            toast.success('Trial de 3 dias ativado! Aproveite! 🚀')
+          onStartTrial={async () => {
+            const result = await startTrial()
+            if (result.success) {
+              setShowPaywall(false)
+              toast.success('Trial de 3 dias ativado! Aproveite! 🚀')
+            } else {
+              toast.error('Erro ao ativar trial')
+            }
           }}
-          trialUsed={trialUsed}
+          trialUsed={subscription?.status === 'trial' || subscription?.status === 'expired'}
           onClose={() => setShowPaywall(false)}
         />
         <ToastContainer toasts={toast.toasts} removeToast={toast.removeToast} />
@@ -248,37 +322,60 @@ function App() {
     )
   }
 
-  // Handlers
-  const handleSaveDose = (newDose) => {
-    addDose(newDose)
-    setShowDoseModal(false)
-    toast.success('Dose registrada com sucesso!')
+  // Main Dashboard
+  const currentWeight = weights.length > 0
+    ? [...weights].sort((a, b) => new Date(b.data) - new Date(a.data))[0].peso
+    : parseFloat(answers.pesoAtual || profile?.peso_atual || 0)
+
+  const currentPlan = getCurrentPlan()
+  const daysRemaining = getDaysRemaining()
+
+  const handleSaveDose = async (newDose) => {
+    const result = await addDose(newDose)
+    if (result) {
+      setShowDoseModal(false)
+      toast.success('Dose registrada com sucesso!')
+    } else {
+      toast.error('Erro ao registrar dose')
+    }
   }
 
-  const handleSaveWeight = (newWeight) => {
-    addWeight(newWeight)
-    setShowWeightModal(false)
-    toast.success('Peso registrado com sucesso!')
+  const handleSaveWeight = async (newWeight) => {
+    const result = await addWeight(newWeight)
+    if (result) {
+      setShowWeightModal(false)
+      toast.success('Peso registrado com sucesso!')
+    } else {
+      toast.error('Erro ao registrar peso')
+    }
   }
 
-  const handleSaveMeasurement = (newMeasurement) => {
+  const handleSaveMeasurement = async (newMeasurement) => {
     if (!checkAccess('measurements')) {
       toast.warning('Atualize seu plano para registrar medidas')
       return
     }
-    addMeasurement(newMeasurement)
-    setShowMeasurementModal(false)
-    toast.success('Medidas registradas com sucesso!')
+    const result = await addMeasurement(newMeasurement)
+    if (result) {
+      setShowMeasurementModal(false)
+      toast.success('Medidas registradas com sucesso!')
+    } else {
+      toast.error('Erro ao registrar medidas')
+    }
   }
 
-  const handleSaveSideEffect = (newEffect) => {
+  const handleSaveSideEffect = async (newEffect) => {
     if (!checkAccess('sideEffects')) {
       toast.warning('Atualize seu plano para registrar efeitos colaterais')
       return
     }
-    addSideEffect(newEffect)
-    setShowSideEffectModal(false)
-    toast.warning('Efeito colateral registrado. Acompanhe sua saúde!')
+    const result = await addSideEffect(newEffect)
+    if (result) {
+      setShowSideEffectModal(false)
+      toast.warning('Efeito colateral registrado. Acompanhe sua saúde!')
+    } else {
+      toast.error('Erro ao registrar efeito')
+    }
   }
 
   const handleSaveNutrition = (nutrition) => {
@@ -286,7 +383,7 @@ function App() {
       toast.warning('Atualize seu plano para rastreamento nutricional')
       return
     }
-    addNutritionEntry(nutrition)
+    // TODO: Implement nutrition saving to Supabase
     setShowNutritionModal(false)
     toast.success('Nutrição registrada!')
   }
@@ -294,13 +391,10 @@ function App() {
   const handleAddPhoto = (photo) => {
     const maxPhotos = checkAccess('photos')
     if (maxPhotos !== true && maxPhotos !== Infinity) {
-      const monthlyCount = getMonthlyCount()
-      if (monthlyCount >= maxPhotos) {
-        toast.warning(`Limite de ${maxPhotos} fotos/mês atingido`)
-        return
-      }
+      toast.warning(`Limite de fotos atingido`)
+      return
     }
-    addPhoto(photo)
+    // TODO: Implement photo upload to Supabase Storage
     toast.success('Foto adicionada!')
   }
 
@@ -311,41 +405,13 @@ function App() {
 
   const recentDoses = doses.slice(-5).reverse()
 
-  const currentWeight = weights.length > 0
-    ? [...weights].sort((a, b) => new Date(b.data) - new Date(a.data))[0].peso
-    : parseFloat(answers.pesoAtual || 0)
-
-  const currentPlan = getCurrentPlan()
-  const daysRemaining = getDaysRemaining()
-
-  const handleLogout = () => {
-    if (window.confirm('Tem certeza que deseja sair? Seus dados serão mantidos.')) {
-      // Reset all state to force return to landing/login screen
-      setStarted(false)
-      setQuizCompleted(false)
-      setShowPaywall(false)
-      setShowLanding(true)
-      setCurrentQuestion(0)
-      setAnswers({})
-
-      // Temporarily clear profile to trigger landing screen
-      // User data remains in localStorage, will be restored on next login
-      setProfile(null)
-
-      toast.info('Você saiu da sua conta')
-
-      // Reload after brief delay to ensure clean state
-      setTimeout(() => {
-        window.location.reload()
-      }, 500)
-    }
-  }
+  const userName = answers.nome || profile?.nome || user?.email?.split('@')[0] || 'Usuário'
 
   return (
     <div className="app-container">
       <div className="dashboard">
-        {/* Subscription Banner - Só mostra se assinatura ativa (não trial) está expirando */}
-        {currentPlan && subscription.status === 'active' && daysRemaining <= 7 && daysRemaining > 0 && (
+        {/* Subscription Banner */}
+        {currentPlan && subscription?.status === 'active' && daysRemaining <= 7 && daysRemaining > 0 && (
           <div className="subscription-banner">
             <span>⚠️ Sua assinatura {currentPlan.name} expira em {daysRemaining} {daysRemaining === 1 ? 'dia' : 'dias'}</span>
             <button onClick={() => setShowPaywall(true)}>Renovar</button>
@@ -353,15 +419,15 @@ function App() {
         )}
 
         {/* Trial Banner */}
-        {currentPlan && subscription.status === 'trial' && (
+        {currentPlan && subscription?.status === 'trial' && (
           <div className="subscription-banner" style={{ background: 'linear-gradient(135deg, #38b2ac, #319795)' }}>
             <span>🎁 Teste grátis: {daysRemaining} {daysRemaining === 1 ? 'dia restante' : 'dias restantes'}</span>
             <button onClick={() => setShowPaywall(true)}>Assinar Agora</button>
           </div>
         )}
 
-        {/* Upgrade Banner para Plano Básico */}
-        {currentPlan?.id === 'basic' && subscription.status === 'active' && (
+        {/* Upgrade Banner */}
+        {currentPlan?.id === 'basic' && subscription?.status === 'active' && (
           <div className="upgrade-banner">
             <div className="upgrade-content">
               <span>🚀 Desbloqueie mais recursos!</span>
@@ -374,15 +440,15 @@ function App() {
         {/* Header */}
         <div className="dashboard-header">
           <div>
-            <h1>Olá, {answers.nome?.split(' ')[0]}! 👋</h1>
+            <h1>Olá, {userName.split(' ')[0]}! 👋</h1>
             <p>Plano {currentPlan?.name} {currentPlan?.icon}</p>
           </div>
           <div className="header-actions">
             <button className="btn-icon" onClick={() => setShowReminderModal(true)} title="Lembretes">
               ⏰
             </button>
-            {(currentPlan?.id === 'pro' || currentPlan?.id === 'premium') && (
-              <button className="btn-icon" onClick={() => setShowExportModal(true)} title="Exportar PDF para Médico">
+            {checkAccess('export') && (
+              <button className="btn-icon" onClick={() => setShowExportModal(true)} title="Exportar PDF">
                 📤
               </button>
             )}
@@ -409,28 +475,28 @@ function App() {
           </button>
           <button
             className={`btn-action btn-measure ${!checkAccess('measurements') ? 'locked' : ''}`}
-            onClick={() => checkAccess('measurements') ? setShowMeasurementModal(true) : toast.warning('Faça upgrade para o plano Pro para acessar')}
+            onClick={() => checkAccess('measurements') ? setShowMeasurementModal(true) : toast.warning('Faça upgrade para o plano Pro')}
           >
             <span>📏</span>
             <span>Medidas</span>
           </button>
           <button
             className={`btn-action btn-effect ${!checkAccess('sideEffects') ? 'locked' : ''}`}
-            onClick={() => checkAccess('sideEffects') ? setShowSideEffectModal(true) : toast.warning('Faça upgrade para o plano Pro para acessar')}
+            onClick={() => checkAccess('sideEffects') ? setShowSideEffectModal(true) : toast.warning('Faça upgrade para o plano Pro')}
           >
             <span>🩺</span>
             <span>Efeitos</span>
           </button>
           <button
             className={`btn-action btn-nutrition ${!checkAccess('nutrition') ? 'locked' : ''}`}
-            onClick={() => checkAccess('nutrition') ? setShowNutritionModal(true) : toast.warning('Faça upgrade para o plano Pro para acessar')}
+            onClick={() => checkAccess('nutrition') ? setShowNutritionModal(true) : toast.warning('Faça upgrade para o plano Pro')}
           >
             <span>🥗</span>
             <span>Nutrição</span>
           </button>
           <button
             className={`btn-action btn-photos ${!checkAccess('photos') ? 'locked' : ''}`}
-            onClick={() => checkAccess('photos') ? setShowPhotosModal(true) : toast.warning('Faça upgrade para o plano Pro para acessar')}
+            onClick={() => checkAccess('photos') ? setShowPhotosModal(true) : toast.warning('Faça upgrade para o plano Pro')}
           >
             <span>📸</span>
             <span>Fotos</span>
@@ -453,7 +519,7 @@ function App() {
           </button>
           <button
             className={`view-tab ${activeView === 'avatar' ? 'active' : ''} ${!checkAccess('avatar') ? 'locked' : ''}`}
-            onClick={() => checkAccess('avatar') ? setActiveView('avatar') : toast.warning('Faça upgrade para o plano Pro para acessar o Avatar')}
+            onClick={() => checkAccess('avatar') ? setActiveView('avatar') : toast.warning('Faça upgrade para o plano Pro')}
           >
             🪞 Avatar
           </button>
@@ -490,7 +556,7 @@ function App() {
                 <div className="card-icon">💉</div>
                 <div className="card-content">
                   <h3>Caneta</h3>
-                  <p className="card-value">{answers.tipoCaneta}</p>
+                  <p className="card-value">{answers.tipoCaneta || profile?.tipo_caneta}</p>
                 </div>
               </div>
 
@@ -506,7 +572,7 @@ function App() {
                 <div className="card-icon">🎯</div>
                 <div className="card-content">
                   <h3>Objetivo</h3>
-                  <p className="card-value-small">{answers.objetivo}</p>
+                  <p className="card-value-small">{answers.objetivo || profile?.objetivo}</p>
                 </div>
               </div>
             </div>
@@ -579,8 +645,8 @@ function App() {
                 <div className="effects-list">
                   {sideEffects.slice(-5).reverse().map(e => (
                     <div key={e.id} className="effect-item">
-                      <span className="effect-icon">{e.tipoIcon}</span>
-                      <span className="effect-name">{e.tipoLabel}</span>
+                      <span className="effect-icon">{e.tipo_icon}</span>
+                      <span className="effect-name">{e.tipo_label}</span>
                       <span className="effect-intensity">⚡ {e.intensidade}/5</span>
                       <span className="effect-date">{formatDate(e.data)}</span>
                     </div>
@@ -594,27 +660,35 @@ function App() {
         {/* Avatar View */}
         {activeView === 'avatar' && checkAccess('avatar') && (
           <TransformationAvatar
-            initialWeight={parseFloat(answers.pesoAtual || 0)}
+            initialWeight={parseFloat(answers.pesoAtual || profile?.peso_inicial || 0)}
             currentWeight={currentWeight}
-            targetWeight={parseFloat(answers.pesoAtual || 0) * 0.85}
-            height={parseFloat(answers.altura || 170)}
+            targetWeight={parseFloat(answers.pesoAtual || profile?.peso_inicial || 0) * 0.85}
+            height={parseFloat(answers.altura || profile?.altura || 170)}
           />
         )}
 
         {/* Goals View */}
         {activeView === 'goals' && (
           <GoalsPanel
-            goals={goals}
+            goals={goals.map(g => ({
+              id: g.id,
+              titulo: g.titulo,
+              tipo: g.tipo,
+              valorAlvo: g.valor_alvo,
+              valorAtual: g.valor_atual,
+              concluida: g.concluida,
+              dataCriacao: g.data_criacao
+            }))}
             onAddGoal={addGoal}
             onToggleGoal={toggleGoal}
             onDeleteGoal={deleteGoal}
             currentWeight={currentWeight}
-            initialWeight={parseFloat(answers.pesoAtual || 0)}
+            initialWeight={parseFloat(answers.pesoAtual || profile?.peso_inicial || 0)}
           />
         )}
       </div>
 
-      {/* Modais */}
+      {/* Modals */}
       {showDoseModal && (
         <DoseRegistration onSave={handleSaveDose} onClose={() => setShowDoseModal(false)} />
       )}
@@ -632,23 +706,50 @@ function App() {
       )}
 
       {showNutritionModal && (
-        <NutritionTracker onSave={handleSaveNutrition} onClose={() => setShowNutritionModal(false)} dailyData={getTodayNutrition()} />
+        <NutritionTracker onSave={handleSaveNutrition} onClose={() => setShowNutritionModal(false)} dailyData={{}} />
       )}
 
       {showPhotosModal && (
-        <ProgressPhotos photos={photos} onAddPhoto={handleAddPhoto} maxPhotos={checkAccess('photos') === true ? null : checkAccess('photos')} onClose={() => setShowPhotosModal(false)} />
+        <ProgressPhotos photos={[]} onAddPhoto={handleAddPhoto} maxPhotos={checkAccess('photos') === true ? null : checkAccess('photos')} onClose={() => setShowPhotosModal(false)} />
       )}
 
       {showHistoryModal && (
-        <HistoryPanel doses={doses} weights={weights} sideEffects={sideEffects} measurements={measurements} onClose={() => setShowHistoryModal(false)} />
+        <HistoryPanel
+          doses={doses}
+          weights={weights}
+          sideEffects={sideEffects.map(e => ({
+            ...e,
+            tipoLabel: e.tipo_label,
+            tipoIcon: e.tipo_icon
+          }))}
+          measurements={measurements}
+          onClose={() => setShowHistoryModal(false)}
+        />
       )}
 
       {showExportModal && (
-        <ExportData profile={answers} doses={doses} weights={weights} sideEffects={sideEffects} measurements={measurements} onClose={() => setShowExportModal(false)} onSuccess={toast.success} />
+        <ExportData
+          profile={answers}
+          doses={doses}
+          weights={weights}
+          sideEffects={sideEffects.map(e => ({
+            ...e,
+            tipoLabel: e.tipo_label,
+            tipoIcon: e.tipo_icon
+          }))}
+          measurements={measurements}
+          onClose={() => setShowExportModal(false)}
+          onSuccess={toast.success}
+        />
       )}
 
       {showReminderModal && (
-        <ReminderSettings reminders={reminders} onUpdate={updateReminders} onClose={() => setShowReminderModal(false)} onSuccess={toast.success} />
+        <ReminderSettings
+          reminders={{ enabled: false, dayOfWeek: 0, time: '08:00' }}
+          onUpdate={() => {}}
+          onClose={() => setShowReminderModal(false)}
+          onSuccess={toast.success}
+        />
       )}
 
       <ToastContainer toasts={toast.toasts} removeToast={toast.removeToast} />
