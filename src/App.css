@@ -803,6 +803,10 @@ body {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .app-container {
+    padding: 1rem;
+  }
+
   .dashboard {
     padding: 1rem;
   }
@@ -811,6 +815,7 @@ body {
     flex-direction: column;
     text-align: center;
     gap: 1rem;
+    padding: 1rem;
   }
 
   .header-actions {
@@ -819,6 +824,7 @@ body {
 
   .action-buttons {
     grid-template-columns: repeat(3, 1fr);
+    gap: 0.8rem;
   }
 
   .view-tabs {
@@ -834,30 +840,123 @@ body {
 
   .cards-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .info-card {
+    padding: 1rem;
+  }
+
+  .card-icon {
+    font-size: 1.5rem;
+    padding: 0.6rem;
+  }
+
+  .card-value {
+    font-size: 1.3rem;
+  }
+
+  .section {
+    padding: 1rem;
+  }
+
+  .upgrade-banner {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .upgrade-content span {
+    font-size: 1rem;
+  }
+
+  .subscription-banner {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.8rem;
+    padding: 1rem;
   }
 }
 
 @media (max-width: 480px) {
+  .app-container {
+    padding: 0.5rem;
+  }
+
+  .dashboard {
+    padding: 0.8rem;
+    border-radius: 12px;
+  }
+
+  .dashboard-header {
+    padding: 0.8rem;
+    border-radius: 10px;
+  }
+
   .dashboard-header h1 {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
+  }
+
+  .dashboard-header p {
+    font-size: 0.85rem;
   }
 
   .action-buttons {
     grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
   }
 
   .btn-action {
-    min-height: 70px;
-    padding: 0.8rem;
-    font-size: 0.8rem;
+    min-height: 65px;
+    padding: 0.7rem;
+    font-size: 0.75rem;
+    border-radius: 10px;
   }
 
   .btn-action span:first-child {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+  }
+
+  .view-tabs {
+    padding: 0.3rem;
+    border-radius: 8px;
+  }
+
+  .view-tab {
+    min-width: 70px;
+    font-size: 0.75rem;
+    padding: 0.5rem;
+    border-radius: 6px;
   }
 
   .cards-grid {
     grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  .info-card {
+    padding: 0.8rem;
+    border-radius: 10px;
+  }
+
+  .card-content h3 {
+    font-size: 0.75rem;
+  }
+
+  .card-value {
+    font-size: 1.2rem;
+  }
+
+  .section {
+    padding: 0.8rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+  }
+
+  .section h2 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
   }
 
   .feature-highlights {
@@ -866,6 +965,90 @@ body {
   }
 
   .app-name {
-    font-size: 2.2rem;
+    font-size: 2rem;
+  }
+
+  .tagline {
+    font-size: 1rem;
+  }
+
+  .splash-content {
+    padding: 1rem;
+  }
+
+  .logo-icon {
+    font-size: 3rem;
+  }
+
+  .empty-state {
+    padding: 1.5rem 0.8rem;
+  }
+
+  .empty-icon {
+    font-size: 2.5rem;
+  }
+
+  .empty-state h3 {
+    font-size: 1rem;
+  }
+
+  .empty-state p {
+    font-size: 0.85rem;
+  }
+
+  .dose-item {
+    padding: 0.8rem;
+  }
+
+  .dose-details {
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .effect-item {
+    padding: 0.7rem;
+  }
+
+  .effect-name {
+    font-size: 0.85rem;
+  }
+
+  .measurement-values span {
+    padding: 0.25rem 0.6rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Extra small phones (320px and below) */
+@media (max-width: 360px) {
+  .dashboard {
+    padding: 0.6rem;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.1rem;
+  }
+
+  .btn-action {
+    min-height: 60px;
+    font-size: 0.7rem;
+  }
+
+  .btn-action span:first-child {
+    font-size: 1rem;
+  }
+
+  .view-tab {
+    font-size: 0.7rem;
+    padding: 0.4rem;
+  }
+
+  .card-value {
+    font-size: 1.1rem;
+  }
+
+  .app-name {
+    font-size: 1.8rem;
   }
 }

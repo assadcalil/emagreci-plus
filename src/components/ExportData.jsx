@@ -184,9 +184,259 @@ Apresente-o ao seu médico para acompanhamento do tratamento.
     const sortedWeights = weights.length > 0
       ? [...weights].sort((a, b) => new Date(a.data) - new Date(b.data))
       : []
+    const sortedMeasurements = measurements.length > 0
+      ? [...measurements].sort((a, b) => new Date(a.data) - new Date(b.data))
+      : []
     const currentWeight = sortedWeights.length > 0 ? sortedWeights[sortedWeights.length - 1].peso : profile.pesoAtual
     const weightLoss = profile.pesoAtual - currentWeight
     const percentage = ((weightLoss / profile.pesoAtual) * 100).toFixed(1)
+
+    // Generate weight chart SVG
+    const generateWeightChart = () => {
+      if (sortedWeights.length < 2) return ''
+
+      const chartWidth = 700
+      const chartHeight = 250
+      const padding = 50
+      const dataPoints = sortedWeights.slice(-12) // Last 12 entries
+
+      const minWeight = Math.min(...dataPoints.map(w => w.peso)) - 2
+      const maxWeight = Math.max(...dataPoints.map(w => w.peso)) + 2
+      const weightRange = maxWeight - minWeight
+
+      const xStep = (chartWidth - 2 * padding) / (dataPoints.length - 1)
+
+      const points = dataPoints.map((w, i) => {
+        const x = padding + i * xStep
+        const y = chartHeight - padding - ((w.peso - minWeight) / weightRange) * (chartHeight - 2 * padding)
+        return { x, y, peso: w.peso, data: format(new Date(w.data), 'dd/MM') }
+      })
+
+      const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
+
+      return `
+        <div class="chart-container">
+          <h4 style="color: #38b2ac; margin-bottom: 15px; font-size: 14px;">📈 Gráfico de Evolução do Peso</h4>
+          <svg width="${chartWidth}" height="${chartHeight}" style="background: #f7fafc; border-radius: 8px;">
+            <!-- Grid lines -->
+            ${[0, 1, 2, 3, 4].map(i => {
+              const y = padding + i * ((chartHeight - 2 * padding) / 4)
+              const weightVal = (maxWeight - (i * weightRange / 4)).toFixed(1)
+              return `
+                <line x1="${padding}" y1="${y}" x2="${chartWidth - padding}" y2="${y}" stroke="#e2e8f0" stroke-width="1"/>
+                <text x="${padding - 10}" y="${y + 4}" font-size="10" fill="#718096" text-anchor="end">${weightVal}</text>
+              `
+            }).join('')}
+
+            <!-- Area fill -->
+            <path d="${pathD} L ${points[points.length-1].x} ${chartHeight - padding} L ${padding} ${chartHeight - padding} Z" fill="rgba(56, 178, 172, 0.1)"/>
+
+            <!-- Line -->
+            <path d="${pathD}" fill="none" stroke="#38b2ac" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+            <!-- Points and labels -->
+            ${points.map(p => `
+              <circle cx="${p.x}" cy="${p.y}" r="5" fill="#38b2ac" stroke="white" stroke-width="2"/>
+              <text x="${p.x}" y="${chartHeight - padding + 20}" font-size="9" fill="#718096" text-anchor="middle">${p.data}</text>
+              <text x="${p.x}" y="${p.y - 10}" font-size="10" fill="#2d3748" text-anchor="middle" font-weight="600">${p.peso}</text>
+            `).join('')}
+
+            <!-- Axis labels -->
+            <text x="${padding - 35}" y="${chartHeight / 2}" font-size="11" fill="#4a5568" text-anchor="middle" transform="rotate(-90, ${padding - 35}, ${chartHeight / 2})">Peso (kg)</text>
+          </svg>
+        </div>
+      `
+    }
+
+    // Generate measurements chart SVG
+    const generateMeasurementsChart = () => {
+      if (sortedMeasurements.length < 2) return ''
+
+      const chartWidth = 700
+      const chartHeight = 280
+      const padding = 50
+      const dataPoints = sortedMeasurements.slice(-10) // Last 10 entries
+
+      // Get all measurements values
+      const allValues = []
+      dataPoints.forEach(m => {
+        if (m.cintura) allValues.push(m.cintura)
+        if (m.quadril) allValues.push(m.quadril)
+        if (m.coxa) allValues.push(m.coxa)
+        if (m.braco) allValues.push(m.braco)
+      })
+
+      if (allValues.length === 0) return ''
+
+      const minVal = Math.min(...allValues) - 5
+      const maxVal = Math.max(...allValues) + 5
+      const valRange = maxVal - minVal
+
+      const xStep = (chartWidth - 2 * padding) / (dataPoints.length - 1)
+
+      const getPoints = (key) => {
+        return dataPoints.map((m, i) => {
+          const x = padding + i * xStep
+          const val = m[key]
+          if (!val) return null
+          const y = chartHeight - padding - ((val - minVal) / valRange) * (chartHeight - 2 * padding)
+          return { x, y, val, data: format(new Date(m.data), 'dd/MM') }
+        }).filter(p => p !== null)
+      }
+
+      const cinturaPoints = getPoints('cintura')
+      const quadrilPoints = getPoints('quadril')
+      const coxaPoints = getPoints('coxa')
+      const bracoPoints = getPoints('braco')
+
+      const createPath = (points, color) => {
+        if (points.length < 2) return ''
+        const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
+        return `<path d="${pathD}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`
+      }
+
+      return `
+        <div class="chart-container" style="margin-top: 20px;">
+          <h4 style="color: #ed8936; margin-bottom: 15px; font-size: 14px;">📏 Gráfico de Evolução das Medidas</h4>
+          <svg width="${chartWidth}" height="${chartHeight}" style="background: #f7fafc; border-radius: 8px;">
+            <!-- Grid lines -->
+            ${[0, 1, 2, 3, 4].map(i => {
+              const y = padding + i * ((chartHeight - 2 * padding) / 4)
+              const val = (maxVal - (i * valRange / 4)).toFixed(0)
+              return `
+                <line x1="${padding}" y1="${y}" x2="${chartWidth - padding}" y2="${y}" stroke="#e2e8f0" stroke-width="1"/>
+                <text x="${padding - 10}" y="${y + 4}" font-size="10" fill="#718096" text-anchor="end">${val}</text>
+              `
+            }).join('')}
+
+            <!-- Lines for each measurement -->
+            ${createPath(cinturaPoints, '#e53e3e')}
+            ${createPath(quadrilPoints, '#38a169')}
+            ${createPath(coxaPoints, '#3182ce')}
+            ${createPath(bracoPoints, '#805ad5')}
+
+            <!-- Points -->
+            ${cinturaPoints.map(p => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#e53e3e" stroke="white" stroke-width="2"/>`).join('')}
+            ${quadrilPoints.map(p => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#38a169" stroke="white" stroke-width="2"/>`).join('')}
+            ${coxaPoints.map(p => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#3182ce" stroke="white" stroke-width="2"/>`).join('')}
+            ${bracoPoints.map(p => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#805ad5" stroke="white" stroke-width="2"/>`).join('')}
+
+            <!-- Date labels -->
+            ${dataPoints.map((m, i) => {
+              const x = padding + i * xStep
+              return `<text x="${x}" y="${chartHeight - padding + 20}" font-size="9" fill="#718096" text-anchor="middle">${format(new Date(m.data), 'dd/MM')}</text>`
+            }).join('')}
+
+            <!-- Axis label -->
+            <text x="${padding - 35}" y="${chartHeight / 2}" font-size="11" fill="#4a5568" text-anchor="middle" transform="rotate(-90, ${padding - 35}, ${chartHeight / 2})">Medida (cm)</text>
+          </svg>
+
+          <!-- Legend -->
+          <div style="display: flex; justify-content: center; gap: 20px; margin-top: 10px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 12px; height: 12px; background: #e53e3e; border-radius: 50%;"></div>
+              <span style="font-size: 11px; color: #4a5568;">Cintura</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 12px; height: 12px; background: #38a169; border-radius: 50%;"></div>
+              <span style="font-size: 11px; color: #4a5568;">Quadril</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 12px; height: 12px; background: #3182ce; border-radius: 50%;"></div>
+              <span style="font-size: 11px; color: #4a5568;">Coxa</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 12px; height: 12px; background: #805ad5; border-radius: 50%;"></div>
+              <span style="font-size: 11px; color: #4a5568;">Braço</span>
+            </div>
+          </div>
+        </div>
+      `
+    }
+
+    // Generate side effects summary
+    const generateSideEffectsSummary = () => {
+      if (sideEffects.length === 0) return ''
+
+      // Group effects by type
+      const effectsByType = {}
+      sideEffects.forEach(e => {
+        if (!effectsByType[e.tipoLabel]) {
+          effectsByType[e.tipoLabel] = {
+            count: 0,
+            totalIntensity: 0,
+            maxIntensity: 0
+          }
+        }
+        effectsByType[e.tipoLabel].count++
+        effectsByType[e.tipoLabel].totalIntensity += e.intensidade
+        effectsByType[e.tipoLabel].maxIntensity = Math.max(effectsByType[e.tipoLabel].maxIntensity, e.intensidade)
+      })
+
+      const sortedEffects = Object.entries(effectsByType)
+        .map(([type, data]) => ({
+          type,
+          count: data.count,
+          avgIntensity: (data.totalIntensity / data.count).toFixed(1),
+          maxIntensity: data.maxIntensity
+        }))
+        .sort((a, b) => b.count - a.count)
+
+      return `
+        <div class="effects-summary" style="background: #fff5f5; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #fed7d7;">
+          <h4 style="color: #c53030; margin-bottom: 12px; font-size: 13px;">📊 Resumo dos Efeitos Colaterais</h4>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;">
+            ${sortedEffects.map(effect => `
+              <div style="background: white; padding: 10px; border-radius: 6px; border-left: 3px solid #fc8181;">
+                <div style="font-weight: 600; color: #1a202c; font-size: 12px;">${effect.type}</div>
+                <div style="font-size: 11px; color: #718096; margin-top: 4px;">
+                  Ocorrências: <strong>${effect.count}x</strong><br>
+                  Intensidade média: <strong>${effect.avgIntensity}/5</strong><br>
+                  Intensidade máxima: <strong>${effect.maxIntensity}/5</strong>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `
+    }
+
+    // Calculate measurements changes
+    const getMeasurementsChanges = () => {
+      if (sortedMeasurements.length < 2) return ''
+
+      const first = sortedMeasurements[0]
+      const last = sortedMeasurements[sortedMeasurements.length - 1]
+
+      const changes = []
+      if (first.cintura && last.cintura) {
+        const diff = last.cintura - first.cintura
+        changes.push(`Cintura: ${diff <= 0 ? '' : '+'}${diff.toFixed(1)} cm`)
+      }
+      if (first.quadril && last.quadril) {
+        const diff = last.quadril - first.quadril
+        changes.push(`Quadril: ${diff <= 0 ? '' : '+'}${diff.toFixed(1)} cm`)
+      }
+      if (first.coxa && last.coxa) {
+        const diff = last.coxa - first.coxa
+        changes.push(`Coxa: ${diff <= 0 ? '' : '+'}${diff.toFixed(1)} cm`)
+      }
+      if (first.braco && last.braco) {
+        const diff = last.braco - first.braco
+        changes.push(`Braço: ${diff <= 0 ? '' : '+'}${diff.toFixed(1)} cm`)
+      }
+
+      if (changes.length === 0) return ''
+
+      return `
+        <div style="background: #fefcbf; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #f6e05e;">
+          <div style="font-size: 12px; color: #744210; font-weight: 600; margin-bottom: 8px;">📏 Variação Total das Medidas</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+            ${changes.map(c => `<span style="font-size: 11px; color: #744210;">${c}</span>`).join('')}
+          </div>
+        </div>
+      `
+    }
 
     const html = `
       <!DOCTYPE html>
@@ -213,7 +463,7 @@ Apresente-o ao seu médico para acompanhamento do tratamento.
           .subtitle { font-size: 14px; color: #718096; }
           .date { font-size: 12px; color: #a0aec0; margin-top: 10px; }
 
-          .section { margin-bottom: 25px; }
+          .section { margin-bottom: 25px; page-break-inside: avoid; }
           .section-title {
             font-size: 16px;
             font-weight: 700;
@@ -248,6 +498,14 @@ Apresente-o ao seu médico para acompanhamento do tratamento.
           .summary-title { font-size: 12px; color: #2b6cb0; margin-bottom: 8px; }
           .summary-value { font-size: 24px; font-weight: 800; color: #2c5282; }
           .summary-sub { font-size: 11px; color: #4299e1; margin-top: 5px; }
+
+          .chart-container {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+          }
 
           table {
             width: 100%;
@@ -287,6 +545,7 @@ Apresente-o ao seu médico para acompanhamento do tratamento.
           @media print {
             body { padding: 20px; }
             .no-print { display: none; }
+            .section { page-break-inside: avoid; }
           }
         </style>
       </head>
@@ -337,6 +596,44 @@ Apresente-o ao seu médico para acompanhamento do tratamento.
             (${weightLoss > 0 ? '-' : '+'}${percentage}%)
           </div>
         </div>
+
+        ${generateWeightChart()}
+        ` : ''}
+
+        ${sortedMeasurements.length > 0 ? `
+        ${getMeasurementsChanges()}
+        ${generateMeasurementsChart()}
+        ` : ''}
+
+        ${sideEffects.length > 0 ? `
+        <div class="section">
+          <div class="section-title">🩺 Efeitos Colaterais Durante o Tratamento</div>
+          ${generateSideEffectsSummary()}
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Horário</th>
+                <th>Tipo</th>
+                <th>Intensidade</th>
+                <th>Duração</th>
+                <th>Observações</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${sideEffects.slice().reverse().map(e => `
+                <tr>
+                  <td>${format(new Date(e.data), 'dd/MM/yyyy')}</td>
+                  <td>${e.horario}</td>
+                  <td><strong>${e.tipoLabel}</strong></td>
+                  <td style="color: ${e.intensidade >= 4 ? '#e53e3e' : e.intensidade >= 3 ? '#dd6b20' : '#38a169'}"><strong>${e.intensidade}/5</strong></td>
+                  <td>${e.duracao}</td>
+                  <td>${e.observacoes || '-'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
         ` : ''}
 
         <div class="section">
@@ -368,7 +665,7 @@ Apresente-o ao seu médico para acompanhamento do tratamento.
         </div>
 
         <div class="section">
-          <div class="section-title">⚖️ Histórico de Peso (${weights.length} registros)</div>
+          <div class="section-title">⚖️ Histórico Completo de Peso (${weights.length} registros)</div>
           ${weights.length > 0 ? `
           <table>
             <thead>
@@ -396,37 +693,9 @@ Apresente-o ao seu médico para acompanhamento do tratamento.
           ` : '<div class="no-data">Nenhum peso registrado</div>'}
         </div>
 
-        ${sideEffects.length > 0 ? `
-        <div class="section">
-          <div class="section-title">🩺 Efeitos Colaterais Reportados (${sideEffects.length} registros)</div>
-          <table>
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Tipo</th>
-                <th>Intensidade</th>
-                <th>Duração</th>
-                <th>Observações</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${sideEffects.slice().reverse().map(e => `
-                <tr>
-                  <td>${format(new Date(e.data), 'dd/MM/yyyy')}</td>
-                  <td>${e.tipoLabel}</td>
-                  <td><strong>${e.intensidade}/5</strong></td>
-                  <td>${e.duracao}</td>
-                  <td>${e.observacoes || '-'}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
-        ` : ''}
-
         ${measurements.length > 0 ? `
         <div class="section">
-          <div class="section-title">📏 Medidas Corporais (${measurements.length} registros)</div>
+          <div class="section-title">📏 Histórico Completo de Medidas (${measurements.length} registros)</div>
           <table>
             <thead>
               <tr>
@@ -435,16 +704,18 @@ Apresente-o ao seu médico para acompanhamento do tratamento.
                 <th>Quadril</th>
                 <th>Braço</th>
                 <th>Coxa</th>
+                <th>Pescoço</th>
               </tr>
             </thead>
             <tbody>
-              ${measurements.slice().reverse().map(m => `
+              ${sortedMeasurements.map(m => `
                 <tr>
                   <td>${format(new Date(m.data), 'dd/MM/yyyy')}</td>
                   <td>${m.cintura ? m.cintura + ' cm' : '-'}</td>
                   <td>${m.quadril ? m.quadril + ' cm' : '-'}</td>
                   <td>${m.braco ? m.braco + ' cm' : '-'}</td>
                   <td>${m.coxa ? m.coxa + ' cm' : '-'}</td>
+                  <td>${m.pescoco ? m.pescoco + ' cm' : '-'}</td>
                 </tr>
               `).join('')}
             </tbody>

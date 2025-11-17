@@ -10,6 +10,64 @@
   gap: 0.8rem;
 }
 
+@media (max-width: 480px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  .effects-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.6rem;
+  }
+
+  .effect-btn {
+    padding: 0.6rem;
+  }
+
+  .effect-icon {
+    font-size: 1.5rem;
+  }
+
+  .effect-label {
+    font-size: 0.8rem;
+  }
+
+  .intensity-slider::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+  }
+
+  .intensity-labels {
+    font-size: 0.8rem;
+  }
+
+  select {
+    padding: 0.7rem;
+    font-size: 0.95rem;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 360px) {
+  .effects-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .effect-btn {
+    padding: 0.5rem;
+  }
+
+  .effect-icon {
+    font-size: 1.3rem;
+  }
+
+  .effect-label {
+    font-size: 0.75rem;
+  }
+}
+
 .effect-btn {
   display: flex;
   flex-direction: column;

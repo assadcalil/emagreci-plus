@@ -103,3 +103,76 @@
   font-size: 0.95rem;
   color: #555;
 }
+
+@media (max-width: 480px) {
+  .export-info {
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .export-info p {
+    font-size: 0.9rem;
+  }
+
+  .export-options {
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .export-btn {
+    padding: 1rem;
+    border-radius: 10px;
+  }
+
+  .export-icon {
+    font-size: 2rem;
+  }
+
+  .export-title {
+    font-size: 1rem;
+  }
+
+  .export-desc {
+    font-size: 0.85rem;
+  }
+
+  .export-btn-primary::before {
+    font-size: 0.6rem;
+    padding: 2px 6px;
+    top: -8px;
+    right: 8px;
+  }
+
+  .export-summary {
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+  }
+
+  .export-summary h4 {
+    font-size: 0.95rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .export-summary li {
+    font-size: 0.9rem;
+    padding: 0.25rem 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .export-btn {
+    padding: 0.8rem;
+  }
+
+  .export-icon {
+    font-size: 1.8rem;
+  }
+
+  .export-title {
+    font-size: 0.95rem;
+  }
+
+  .export-desc {
+    font-size: 0.8rem;
+  }
+}
