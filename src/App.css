@@ -5,8 +5,9 @@
 }
 
 :root {
-  --primary: #2d3748;
-  --primary-light: #4a5568;
+  --primary: #38b2ac;
+  --primary-light: #4fd1c5;
+  --primary-dark: #319795;
   --secondary: #38b2ac;
   --accent: #ed8936;
   --success: #48bb78;
@@ -14,9 +15,12 @@
   --danger: #f56565;
   --background: #f7fafc;
   --surface: #ffffff;
+  --card-background: #ffffff;
   --text-primary: #1a202c;
   --text-secondary: #718096;
+  --text-muted: #a0aec0;
   --border: #e2e8f0;
+  --border-color: #e2e8f0;
   --shadow: rgba(0, 0, 0, 0.1);
 }
 

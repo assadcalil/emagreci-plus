@@ -76,6 +76,7 @@ CREATE TABLE IF NOT EXISTS side_effects (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
   data DATE NOT NULL,
+  horario TIME,
   tipo TEXT NOT NULL,
   tipo_label TEXT NOT NULL,
   tipo_icon TEXT,
@@ -136,6 +137,18 @@ CREATE TABLE IF NOT EXISTS reminders (
   UNIQUE(user_id)
 );
 
+-- Community Messages Table (for Premium users)
+CREATE TABLE IF NOT EXISTS community_messages (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  user_name TEXT NOT NULL,
+  content TEXT NOT NULL,
+  weight_loss DECIMAL(5,2),
+  type TEXT DEFAULT 'message', -- message, result
+  likes UUID[] DEFAULT '{}', -- Array of user IDs who liked
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Row Level Security (RLS) Policies
 -- Enable RLS on all tables
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
@@ -148,6 +161,7 @@ ALTER TABLE goals ENABLE ROW LEVEL SECURITY;
 ALTER TABLE progress_photos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE nutrition_entries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reminders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE community_messages ENABLE ROW LEVEL SECURITY;
 
 -- Profiles policies
 CREATE POLICY "Users can view own profile" ON profiles
@@ -255,6 +269,19 @@ CREATE POLICY "Users can insert own reminders" ON reminders
 CREATE POLICY "Users can update own reminders" ON reminders
   FOR UPDATE USING (auth.uid() = user_id);
 
+-- Community messages policies (all authenticated users can read)
+CREATE POLICY "Authenticated users can view all messages" ON community_messages
+  FOR SELECT USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Users can insert own messages" ON community_messages
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own messages" ON community_messages
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own messages" ON community_messages
+  FOR DELETE USING (auth.uid() = user_id);
+
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_doses_user_id ON doses(user_id);
 CREATE INDEX IF NOT EXISTS idx_doses_data ON doses(data);
@@ -265,6 +292,7 @@ CREATE INDEX IF NOT EXISTS idx_side_effects_user_id ON side_effects(user_id);
 CREATE INDEX IF NOT EXISTS idx_goals_user_id ON goals(user_id);
 CREATE INDEX IF NOT EXISTS idx_subscriptions_user_id ON subscriptions(user_id);
 CREATE INDEX IF NOT EXISTS idx_subscriptions_stripe_id ON subscriptions(stripe_subscription_id);
+CREATE INDEX IF NOT EXISTS idx_community_messages_created_at ON community_messages(created_at);
 
 -- Function to automatically update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
