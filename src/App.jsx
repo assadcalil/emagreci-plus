@@ -198,8 +198,8 @@ function App() {
     )
   }
 
-  // Paywall Screen
-  if (showPaywall && !isSubscribed()) {
+  // Paywall Screen (mostrar quando solicitado, mesmo durante trial)
+  if (showPaywall) {
     return (
       <>
         <PaywallScreen
@@ -214,6 +214,7 @@ function App() {
             toast.success('Trial de 3 dias ativado! Aproveite! 🚀')
           }}
           trialUsed={trialUsed}
+          onClose={() => setShowPaywall(false)}
         />
         <ToastContainer toasts={toast.toasts} removeToast={toast.removeToast} />
       </>
