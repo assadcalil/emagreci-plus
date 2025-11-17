@@ -1,0 +1,124 @@
+.reminder-form {
+  margin-bottom: 1.5rem;
+}
+
+.warning-banner {
+  background: rgba(241, 196, 15, 0.2);
+  border: 1px solid #f1c40f;
+  color: #f39c12;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.error-banner {
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid #e74c3c;
+  color: #c0392b;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+.info-banner {
+  background: rgba(52, 152, 219, 0.1);
+  border: 1px solid #3498db;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.info-banner p {
+  margin: 0 0 0.8rem 0;
+  color: #2980b9;
+  font-weight: 500;
+}
+
+.switch-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.8rem;
+  background: #f0f0f0;
+  border-radius: 10px;
+}
+
+.switch-label span:first-child {
+  font-weight: 600;
+  color: #333;
+}
+
+.switch-input {
+  display: none;
+}
+
+.switch-slider {
+  position: relative;
+  width: 50px;
+  height: 26px;
+  background: #ccc;
+  border-radius: 13px;
+  transition: background 0.3s;
+}
+
+.switch-slider::before {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.3s;
+}
+
+.switch-input:checked + .switch-slider {
+  background: #667eea;
+}
+
+.switch-input:checked + .switch-slider::before {
+  transform: translateX(24px);
+}
+
+.reminder-preview {
+  background: rgba(46, 204, 113, 0.1);
+  border: 1px solid #2ecc71;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-top: 1rem;
+}
+
+.reminder-preview h4 {
+  margin: 0 0 0.5rem 0;
+  color: #27ae60;
+}
+
+.reminder-preview p {
+  margin: 0;
+  color: #27ae60;
+}
+
+.btn-test {
+  width: 100%;
+  padding: 0.8rem;
+  background: rgba(52, 152, 219, 0.1);
+  border: 2px solid #3498db;
+  border-radius: 10px;
+  color: #3498db;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: all 0.3s;
+}
+
+.btn-test:hover {
+  background: #3498db;
+  color: white;
+}
