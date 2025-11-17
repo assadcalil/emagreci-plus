@@ -95,7 +95,7 @@ function PaywallScreen({ onSelectPlan, onStartTrial, trialUsed }) {
               onClick={handleTrial}
               disabled={isProcessing}
             >
-              Experimentar 7 dias grátis
+              Experimentar 3 dias grátis (Plano Básico)
             </button>
           )}
 

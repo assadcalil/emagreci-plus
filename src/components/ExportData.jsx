@@ -179,6 +179,317 @@ Apresente-o ao seu médico para acompanhamento do tratamento.
     downloadFile(report, `relatorio_emagreci_${date}.txt`, 'text/plain;charset=utf-8;')
   }
 
+  const generatePDFReport = () => {
+    const today = format(new Date(), "d 'de' MMMM 'de' yyyy", { locale: ptBR })
+    const sortedWeights = weights.length > 0
+      ? [...weights].sort((a, b) => new Date(a.data) - new Date(b.data))
+      : []
+    const currentWeight = sortedWeights.length > 0 ? sortedWeights[sortedWeights.length - 1].peso : profile.pesoAtual
+    const weightLoss = profile.pesoAtual - currentWeight
+    const percentage = ((weightLoss / profile.pesoAtual) * 100).toFixed(1)
+
+    const html = `
+      <!DOCTYPE html>
+      <html lang="pt-BR">
+      <head>
+        <meta charset="UTF-8">
+        <title>Relatório Médico - ${profile.nome}</title>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 40px;
+            color: #1a202c;
+            line-height: 1.6;
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #38b2ac;
+          }
+          .logo { font-size: 48px; margin-bottom: 10px; }
+          .title { font-size: 28px; font-weight: 700; color: #2d3748; margin-bottom: 5px; }
+          .subtitle { font-size: 14px; color: #718096; }
+          .date { font-size: 12px; color: #a0aec0; margin-top: 10px; }
+
+          .section { margin-bottom: 25px; }
+          .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #38b2ac;
+            margin-bottom: 12px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #e2e8f0;
+          }
+
+          .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+          }
+          .info-item {
+            background: #f7fafc;
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #38b2ac;
+          }
+          .info-label { font-size: 11px; color: #718096; text-transform: uppercase; letter-spacing: 0.5px; }
+          .info-value { font-size: 14px; font-weight: 600; color: #1a202c; margin-top: 3px; }
+
+          .summary-box {
+            background: linear-gradient(135deg, #ebf8ff, #bee3f8);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+          }
+          .summary-title { font-size: 12px; color: #2b6cb0; margin-bottom: 8px; }
+          .summary-value { font-size: 24px; font-weight: 800; color: #2c5282; }
+          .summary-sub { font-size: 11px; color: #4299e1; margin-top: 5px; }
+
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 11px;
+          }
+          th {
+            background: #38b2ac;
+            color: white;
+            padding: 8px;
+            text-align: left;
+            font-weight: 600;
+          }
+          td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #e2e8f0;
+          }
+          tr:nth-child(even) { background: #f7fafc; }
+
+          .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+            text-align: center;
+            font-size: 10px;
+            color: #a0aec0;
+          }
+
+          .no-data {
+            text-align: center;
+            padding: 15px;
+            color: #a0aec0;
+            font-style: italic;
+          }
+
+          @media print {
+            body { padding: 20px; }
+            .no-print { display: none; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="logo">💉</div>
+          <div class="title">Relatório Médico - Emagreci+</div>
+          <div class="subtitle">Acompanhamento de Tratamento com GLP-1</div>
+          <div class="date">Gerado em ${today}</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">👤 Informações do Paciente</div>
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-label">Nome Completo</div>
+              <div class="info-value">${profile.nome}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Data de Nascimento</div>
+              <div class="info-value">${profile.dataNascimento ? format(new Date(profile.dataNascimento), 'dd/MM/yyyy') : '-'}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Medicação</div>
+              <div class="info-value">${profile.tipoCaneta}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Objetivo</div>
+              <div class="info-value">${profile.objetivo}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Altura</div>
+              <div class="info-value">${profile.altura} cm</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Peso Inicial</div>
+              <div class="info-value">${profile.pesoAtual} kg</div>
+            </div>
+          </div>
+        </div>
+
+        ${weights.length > 0 ? `
+        <div class="summary-box">
+          <div class="summary-title">EVOLUÇÃO DO PESO</div>
+          <div class="summary-value">${weightLoss > 0 ? '-' : '+'}${Math.abs(weightLoss).toFixed(1)} kg</div>
+          <div class="summary-sub">
+            De ${profile.pesoAtual} kg para ${currentWeight} kg
+            (${weightLoss > 0 ? '-' : '+'}${percentage}%)
+          </div>
+        </div>
+        ` : ''}
+
+        <div class="section">
+          <div class="section-title">💉 Histórico de Aplicações (${doses.length} registros)</div>
+          ${doses.length > 0 ? `
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Horário</th>
+                <th>Dosagem</th>
+                <th>Local</th>
+                <th>Observações</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${doses.slice().reverse().map(d => `
+                <tr>
+                  <td>${format(new Date(d.data), 'dd/MM/yyyy')}</td>
+                  <td>${d.horario}</td>
+                  <td><strong>${d.dosagem} mg</strong></td>
+                  <td>${d.local}</td>
+                  <td>${d.observacoes || '-'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          ` : '<div class="no-data">Nenhuma aplicação registrada</div>'}
+        </div>
+
+        <div class="section">
+          <div class="section-title">⚖️ Histórico de Peso (${weights.length} registros)</div>
+          ${weights.length > 0 ? `
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Peso</th>
+                <th>Variação</th>
+                <th>Observações</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${sortedWeights.map((w, i) => {
+                const prevWeight = i > 0 ? sortedWeights[i-1].peso : profile.pesoAtual
+                const diff = w.peso - prevWeight
+                return `
+                <tr>
+                  <td>${format(new Date(w.data), 'dd/MM/yyyy')}</td>
+                  <td><strong>${w.peso} kg</strong></td>
+                  <td style="color: ${diff <= 0 ? '#48bb78' : '#e53e3e'}">${diff <= 0 ? '' : '+'}${diff.toFixed(1)} kg</td>
+                  <td>${w.observacoes || '-'}</td>
+                </tr>
+              `}).join('')}
+            </tbody>
+          </table>
+          ` : '<div class="no-data">Nenhum peso registrado</div>'}
+        </div>
+
+        ${sideEffects.length > 0 ? `
+        <div class="section">
+          <div class="section-title">🩺 Efeitos Colaterais Reportados (${sideEffects.length} registros)</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Tipo</th>
+                <th>Intensidade</th>
+                <th>Duração</th>
+                <th>Observações</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${sideEffects.slice().reverse().map(e => `
+                <tr>
+                  <td>${format(new Date(e.data), 'dd/MM/yyyy')}</td>
+                  <td>${e.tipoLabel}</td>
+                  <td><strong>${e.intensidade}/5</strong></td>
+                  <td>${e.duracao}</td>
+                  <td>${e.observacoes || '-'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+        ` : ''}
+
+        ${measurements.length > 0 ? `
+        <div class="section">
+          <div class="section-title">📏 Medidas Corporais (${measurements.length} registros)</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Cintura</th>
+                <th>Quadril</th>
+                <th>Braço</th>
+                <th>Coxa</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${measurements.slice().reverse().map(m => `
+                <tr>
+                  <td>${format(new Date(m.data), 'dd/MM/yyyy')}</td>
+                  <td>${m.cintura ? m.cintura + ' cm' : '-'}</td>
+                  <td>${m.quadril ? m.quadril + ' cm' : '-'}</td>
+                  <td>${m.braco ? m.braco + ' cm' : '-'}</td>
+                  <td>${m.coxa ? m.coxa + ' cm' : '-'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+        ` : ''}
+
+        <div class="footer">
+          <p><strong>Emagreci+</strong> - Aplicativo de Acompanhamento de Tratamento com GLP-1</p>
+          <p>Este relatório foi gerado automaticamente e deve ser apresentado ao médico responsável pelo tratamento.</p>
+          <p>Relatório gerado em ${today}</p>
+        </div>
+
+        <div class="no-print" style="text-align: center; margin-top: 30px;">
+          <button onclick="window.print()" style="
+            background: #38b2ac;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+          ">
+            📄 Salvar como PDF / Imprimir
+          </button>
+        </div>
+      </body>
+      </html>
+    `
+    return html
+  }
+
+  const handleExportPDF = () => {
+    const html = generatePDFReport()
+    const newWindow = window.open('', '_blank')
+    if (newWindow) {
+      newWindow.document.write(html)
+      newWindow.document.close()
+      onSuccess('Relatório PDF gerado! Use Ctrl+P ou o botão para salvar.')
+    } else {
+      onSuccess('Popup bloqueado. Permita popups para gerar o PDF.')
+    }
+  }
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -192,6 +503,12 @@ Apresente-o ao seu médico para acompanhamento do tratamento.
         </div>
 
         <div className="export-options">
+          <button className="export-btn export-btn-primary" onClick={handleExportPDF}>
+            <span className="export-icon">📄</span>
+            <span className="export-title">Relatório PDF para Médico</span>
+            <span className="export-desc">Documento profissional completo com todos os dados</span>
+          </button>
+
           <button className="export-btn" onClick={handleExportCSV}>
             <span className="export-icon">📊</span>
             <span className="export-title">Exportar CSV</span>
@@ -200,14 +517,14 @@ Apresente-o ao seu médico para acompanhamento do tratamento.
 
           <button className="export-btn" onClick={handleExportJSON}>
             <span className="export-icon">💾</span>
-            <span className="export-title">Exportar JSON</span>
+            <span className="export-title">Backup JSON</span>
             <span className="export-desc">Backup completo dos dados</span>
           </button>
 
           <button className="export-btn" onClick={handleExportReport}>
-            <span className="export-icon">📄</span>
-            <span className="export-title">Relatório Médico</span>
-            <span className="export-desc">Documento formatado para consulta</span>
+            <span className="export-icon">📝</span>
+            <span className="export-title">Relatório Texto</span>
+            <span className="export-desc">Versão simplificada em texto</span>
           </button>
         </div>
 
