@@ -187,15 +187,14 @@ body {
 /* DASHBOARD - Clean e Profissional */
 .app-container {
   min-height: 100vh;
-  background: var(--background);
+  background: linear-gradient(135deg, #1a202c 0%, #2d3748 50%, #4a5568 100%);
 }
 
 .dashboard {
   max-width: 1200px;
   margin: 0 auto;
   padding: 1.5rem;
-  background: var(--background);
-  color: var(--text-primary);
+  color: white;
 }
 
 /* Subscription Banner */
