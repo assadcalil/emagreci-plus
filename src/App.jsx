@@ -322,6 +322,17 @@ function App() {
           </div>
         )}
 
+        {/* Upgrade Banner para Plano Básico */}
+        {currentPlan?.id === 'basic' && subscription.status === 'active' && (
+          <div className="upgrade-banner">
+            <div className="upgrade-content">
+              <span>🚀 Desbloqueie mais recursos!</span>
+              <p>Faça upgrade para Pro ou Premium e tenha acesso completo</p>
+            </div>
+            <button onClick={() => setShowPaywall(true)}>Ver Planos</button>
+          </div>
+        )}
+
         {/* Header */}
         <div className="dashboard-header">
           <div>

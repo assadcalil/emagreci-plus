@@ -25,32 +25,33 @@ function WeightChart({ weights }) {
     <div className="weight-chart">
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-          <XAxis 
-            dataKey="data" 
-            stroke="rgba(255,255,255,0.7)"
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(56, 178, 172, 0.2)" />
+          <XAxis
+            dataKey="data"
+            stroke="#4a5568"
             style={{ fontSize: '0.85rem' }}
           />
-          <YAxis 
+          <YAxis
             domain={[minWeight, maxWeight]}
-            stroke="rgba(255,255,255,0.7)"
+            stroke="#4a5568"
             style={{ fontSize: '0.85rem' }}
           />
-          <Tooltip 
-            contentStyle={{ 
-              background: 'rgba(255,255,255,0.95)', 
-              border: 'none',
+          <Tooltip
+            contentStyle={{
+              background: 'rgba(255,255,255,0.95)',
+              border: '2px solid #38b2ac',
               borderRadius: '10px',
-              color: '#333'
+              color: '#1a202c'
             }}
+            formatter={(value) => [`${value} kg`, 'Peso']}
           />
-          <Line 
-            type="monotone" 
-            dataKey="peso" 
-            stroke="#fff" 
+          <Line
+            type="monotone"
+            dataKey="peso"
+            stroke="#38b2ac"
             strokeWidth={3}
-            dot={{ fill: '#fff', r: 5 }}
-            activeDot={{ r: 7 }}
+            dot={{ fill: '#38b2ac', stroke: '#fff', strokeWidth: 2, r: 6 }}
+            activeDot={{ r: 8, fill: '#319795' }}
           />
         </LineChart>
       </ResponsiveContainer>
