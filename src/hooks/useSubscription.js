@@ -1,4 +1,5 @@
 import { useLocalStorage } from './useLocalStorage'
+import { STRIPE_PRICES } from '../config/stripe'
 
 // Definição dos planos
 export const PLANS = {
@@ -6,9 +7,11 @@ export const PLANS = {
     id: 'basic',
     name: 'Básico',
     price: 19.90,
+    yearlyPrice: 199.00,
     period: 'mês',
     color: '#95a5a6',
     icon: '🌱',
+    stripePriceId: STRIPE_PRICES.basic,
     features: {
       doses: true,
       weights: true,
@@ -40,10 +43,12 @@ export const PLANS = {
     id: 'pro',
     name: 'Profissional',
     price: 39.90,
+    yearlyPrice: 399.00,
     period: 'mês',
     color: '#3498db',
     icon: '⭐',
     popular: true,
+    stripePriceId: STRIPE_PRICES.pro,
     features: {
       doses: true,
       weights: true,
@@ -80,9 +85,11 @@ export const PLANS = {
     id: 'premium',
     name: 'Premium',
     price: 69.90,
+    yearlyPrice: 699.00,
     period: 'mês',
     color: '#f39c12',
     icon: '👑',
+    stripePriceId: STRIPE_PRICES.premium,
     features: {
       doses: true,
       weights: true,
@@ -121,12 +128,15 @@ export function useSubscription() {
     planId: null,
     startDate: null,
     expiresAt: null,
-    status: 'none' // none, active, expired, trial
+    status: 'none', // none, active, expired, trial, cancelled
+    stripeSubscriptionId: null,
+    stripeCustomerId: null,
+    billingPeriod: 'monthly' // monthly, yearly
   })
 
   const [trialUsed, setTrialUsed] = useLocalStorage('trialUsed', false)
 
-  const subscribe = (planId) => {
+  const subscribe = (planId, stripeData = {}) => {
     const now = new Date()
     const expiresAt = new Date(now.setMonth(now.getMonth() + 1))
 
@@ -134,8 +144,21 @@ export function useSubscription() {
       planId,
       startDate: new Date().toISOString(),
       expiresAt: expiresAt.toISOString(),
-      status: 'active'
+      status: 'active',
+      stripeSubscriptionId: stripeData.subscriptionId || null,
+      stripeCustomerId: stripeData.customerId || null,
+      billingPeriod: stripeData.billingPeriod || 'monthly'
     })
+  }
+
+  const updateFromStripe = (stripeData) => {
+    setSubscription(prev => ({
+      ...prev,
+      stripeSubscriptionId: stripeData.subscriptionId,
+      stripeCustomerId: stripeData.customerId,
+      status: stripeData.status || prev.status,
+      expiresAt: stripeData.currentPeriodEnd || prev.expiresAt
+    }))
   }
 
   const startTrial = () => {
@@ -148,7 +171,10 @@ export function useSubscription() {
       planId: 'basic', // Trial no plano básico
       startDate: new Date().toISOString(),
       expiresAt: expiresAt.toISOString(),
-      status: 'trial'
+      status: 'trial',
+      stripeSubscriptionId: null,
+      stripeCustomerId: null,
+      billingPeriod: 'monthly'
     })
     setTrialUsed(true)
     return true
@@ -171,6 +197,11 @@ export function useSubscription() {
       return false
     }
 
+    // Verificar se está cancelado
+    if (subscription.status === 'cancelled') {
+      return false
+    }
+
     const plan = PLANS[subscription.planId]
     if (!plan) return false
 
@@ -189,18 +220,31 @@ export function useSubscription() {
   }
 
   const isSubscribed = () => {
+    if (subscription.status === 'cancelled') return false
+    if (new Date(subscription.expiresAt) < new Date()) return false
     return subscription.status === 'active' || subscription.status === 'trial'
+  }
+
+  const getSubscriptionInfo = () => {
+    return {
+      ...subscription,
+      plan: getCurrentPlan(),
+      daysRemaining: getDaysRemaining(),
+      isActive: isSubscribed()
+    }
   }
 
   return {
     subscription,
     subscribe,
+    updateFromStripe,
     startTrial,
     cancelSubscription,
     checkAccess,
     getCurrentPlan,
     getDaysRemaining,
     isSubscribed,
+    getSubscriptionInfo,
     trialUsed,
     PLANS
   }

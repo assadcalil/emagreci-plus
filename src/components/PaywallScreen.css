@@ -414,6 +414,174 @@
   }
 }
 
+/* Billing Toggle */
+.billing-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.4rem;
+  border-radius: 10px;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 0.7rem 1.2rem;
+  border: none;
+  background: transparent;
+  color: #a0aec0;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.toggle-btn.active {
+  background: white;
+  color: #1a202c;
+}
+
+.toggle-btn:hover:not(.active) {
+  color: white;
+}
+
+.discount-badge {
+  position: absolute;
+  top: -8px;
+  right: -5px;
+  background: #48bb78;
+  color: white;
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.billing-note {
+  font-size: 0.75rem;
+  color: #718096;
+  margin-top: 5px;
+}
+
+/* Payment Methods */
+.payment-methods {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  color: #a0aec0;
+  font-size: 0.85rem;
+}
+
+.payment-icons {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.stripe-badge {
+  background: #635bff;
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+/* Stripe Error */
+.stripe-error {
+  background: rgba(245, 101, 101, 0.1);
+  border: 1px solid #fc8181;
+  color: #fc8181;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* Stripe Info Modal */
+.stripe-info-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 1rem;
+}
+
+.stripe-info-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.stripe-info-content h3 {
+  color: #1a202c;
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+}
+
+.stripe-info-content p {
+  color: #4a5568;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.stripe-info-content pre {
+  background: #1a202c;
+  color: #48bb78;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.stripe-info-content a {
+  color: #38b2ac;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.stripe-info-content a:hover {
+  text-decoration: underline;
+}
+
+.stripe-info-content button {
+  width: 100%;
+  padding: 0.8rem;
+  background: #38b2ac;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.stripe-info-content button:hover {
+  background: #319795;
+}
+
 @media (max-width: 768px) {
   .paywall-screen {
     padding: 1.5rem 1rem;
@@ -433,5 +601,42 @@
 
   .plan-card {
     padding: 0;
+  }
+
+  .billing-toggle {
+    max-width: 100%;
+  }
+
+  .stripe-info-content {
+    padding: 1.5rem;
+  }
+
+  .stripe-info-content pre {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .billing-toggle {
+    margin-bottom: 1.5rem;
+  }
+
+  .toggle-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .discount-badge {
+    font-size: 0.6rem;
+    padding: 1px 4px;
+  }
+
+  .payment-methods {
+    font-size: 0.8rem;
+  }
+
+  .stripe-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
   }
 }
