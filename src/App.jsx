@@ -65,7 +65,7 @@ function App() {
   const { photos, addPhoto, getMonthlyCount } = useProgressPhotos()
 
   // Subscription
-  const { subscribe, startTrial, checkAccess, isSubscribed, trialUsed, getCurrentPlan, getDaysRemaining } = useSubscription()
+  const { subscribe, startTrial, checkAccess, isSubscribed, trialUsed, getCurrentPlan, getDaysRemaining, subscription } = useSubscription()
 
   // Toast notifications
   const toast = useToast()
@@ -274,14 +274,33 @@ function App() {
   const currentPlan = getCurrentPlan()
   const daysRemaining = getDaysRemaining()
 
+  const handleLogout = () => {
+    if (window.confirm('Tem certeza que deseja sair? Seus dados serão mantidos.')) {
+      setStarted(false)
+      setQuizCompleted(false)
+      setShowPaywall(false)
+      setCurrentQuestion(0)
+      setAnswers({})
+      toast.info('Você saiu da sua conta')
+    }
+  }
+
   return (
     <div className="app-container">
       <div className="dashboard">
-        {/* Subscription Banner */}
-        {currentPlan && daysRemaining <= 7 && (
+        {/* Subscription Banner - Só mostra se assinatura ativa (não trial) está expirando */}
+        {currentPlan && subscription.status === 'active' && daysRemaining <= 7 && daysRemaining > 0 && (
           <div className="subscription-banner">
-            <span>⚠️ Sua assinatura {currentPlan.name} expira em {daysRemaining} dias</span>
+            <span>⚠️ Sua assinatura {currentPlan.name} expira em {daysRemaining} {daysRemaining === 1 ? 'dia' : 'dias'}</span>
             <button onClick={() => setShowPaywall(true)}>Renovar</button>
+          </div>
+        )}
+
+        {/* Trial Banner */}
+        {currentPlan && subscription.status === 'trial' && (
+          <div className="subscription-banner" style={{ background: 'linear-gradient(135deg, #38b2ac, #319795)' }}>
+            <span>🎁 Teste grátis: {daysRemaining} {daysRemaining === 1 ? 'dia restante' : 'dias restantes'}</span>
+            <button onClick={() => setShowPaywall(true)}>Assinar Agora</button>
           </div>
         )}
 
@@ -295,8 +314,8 @@ function App() {
             <button className="btn-icon" onClick={() => setShowReminderModal(true)} title="Lembretes">
               ⏰
             </button>
-            {checkAccess('export') && (
-              <button className="btn-icon" onClick={() => setShowExportModal(true)} title="Exportar">
+            {(currentPlan?.id === 'pro' || currentPlan?.id === 'premium') && (
+              <button className="btn-icon" onClick={() => setShowExportModal(true)} title="Exportar PDF para Médico">
                 📤
               </button>
             )}
@@ -305,6 +324,9 @@ function App() {
                 📚
               </button>
             )}
+            <button className="btn-icon" onClick={handleLogout} title="Sair">
+              🚪
+            </button>
           </div>
         </div>
 
