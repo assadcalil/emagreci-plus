@@ -15,6 +15,7 @@ import TransformationAvatar from './components/TransformationAvatar'
 import NutritionTracker from './components/NutritionTracker'
 import InjectionMap from './components/InjectionMap'
 import ProgressPhotos from './components/ProgressPhotos'
+import LandingPage from './components/LandingPage'
 import { ToastContainer } from './components/Toast'
 import { useToast } from './hooks/useToast'
 import { useSubscription } from './hooks/useSubscription'
@@ -36,6 +37,7 @@ function App() {
   const [started, setStarted] = useState(false)
   const [quizCompleted, setQuizCompleted] = useState(false)
   const [showPaywall, setShowPaywall] = useState(false)
+  const [showLanding, setShowLanding] = useState(true)
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState({})
 
@@ -77,6 +79,7 @@ function App() {
         setAnswers(profile)
         setStarted(true)
         setQuizCompleted(true)
+        setShowLanding(false)
         if (!isSubscribed()) {
           setShowPaywall(true)
         }
@@ -109,7 +112,20 @@ function App() {
     return () => clearInterval(interval)
   }, [reminders, toast])
 
-  // Tela inicial
+  // Landing Page (para novos visitantes)
+  if (!started && showLanding && !profile) {
+    return (
+      <>
+        <LandingPage onStart={() => {
+          setShowLanding(false)
+          setStarted(true)
+        }} />
+        <ToastContainer toasts={toast.toasts} removeToast={toast.removeToast} />
+      </>
+    )
+  }
+
+  // Tela inicial simples (se pular landing)
   if (!started) {
     return (
       <div className="splash-screen">
@@ -195,7 +211,7 @@ function App() {
           onStartTrial={() => {
             startTrial()
             setShowPaywall(false)
-            toast.success('Trial de 7 dias ativado! Aproveite! 🚀')
+            toast.success('Trial de 3 dias ativado! Aproveite! 🚀')
           }}
           trialUsed={trialUsed}
         />
@@ -279,6 +295,7 @@ function App() {
       setStarted(false)
       setQuizCompleted(false)
       setShowPaywall(false)
+      setShowLanding(true)
       setCurrentQuestion(0)
       setAnswers({})
       toast.info('Você saiu da sua conta')
