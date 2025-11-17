@@ -100,4 +100,29 @@
   .toast {
     padding: 8px 12px;
   }
+
+  .toast-message {
+    font-size: 0.8rem;
+  }
+
+  .toast-icon {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .toast-container {
+    top: 8px;
+    right: 8px;
+    left: 8px;
+  }
+
+  .toast {
+    padding: 7px 10px;
+    gap: 8px;
+  }
+
+  .toast-message {
+    font-size: 0.75rem;
+  }
 }
