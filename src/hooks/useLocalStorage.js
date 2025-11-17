@@ -158,3 +158,47 @@ export function useReminders() {
 
   return { reminders, updateReminders }
 }
+
+// Hook para nutrição
+export function useNutrition() {
+  const [nutrition, setNutrition] = useLocalStorage('nutrition', [])
+
+  const addNutritionEntry = (entry) => {
+    const newEntry = {
+      ...entry,
+      id: `nutrition_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      timestamp: new Date().toISOString()
+    }
+    setNutrition([...nutrition, newEntry])
+    return newEntry
+  }
+
+  const getTodayNutrition = () => {
+    const today = new Date().toISOString().split('T')[0]
+    return nutrition.find(n => n.data === today) || null
+  }
+
+  return { nutrition, addNutritionEntry, getTodayNutrition, setNutrition }
+}
+
+// Hook para fotos de progresso
+export function useProgressPhotos() {
+  const [photos, setPhotos] = useLocalStorage('progressPhotos', [])
+
+  const addPhoto = (photo) => {
+    setPhotos([...photos, photo])
+    return photo
+  }
+
+  const deletePhoto = (id) => {
+    setPhotos(photos.filter(p => p.id !== id))
+  }
+
+  const getMonthlyCount = () => {
+    const now = new Date()
+    const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+    return photos.filter(p => p.data.startsWith(thisMonth)).length
+  }
+
+  return { photos, addPhoto, deletePhoto, getMonthlyCount, setPhotos }
+}
