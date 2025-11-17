@@ -48,6 +48,50 @@ body {
   animation: rotateGradient 20s linear infinite;
 }
 
+/* LOADING SCREEN */
+.loading-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a202c 0%, #2d3748 50%, #4a5568 100%);
+}
+
+.loading-content {
+  text-align: center;
+  color: white;
+}
+
+.loading-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.loading-content h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #38b2ac;
+}
+
+.loading-spinner-large {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(56, 178, 172, 0.3);
+  border-radius: 50%;
+  border-top-color: #38b2ac;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+.loading-content p {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 @keyframes rotateGradient {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
