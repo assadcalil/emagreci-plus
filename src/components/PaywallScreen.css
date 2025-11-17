@@ -1,93 +1,84 @@
 .paywall-screen {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
+  background: #f7fafc;
+  padding: 2rem 1rem;
 }
 
 .paywall-container {
-  background: white;
-  border-radius: 30px;
-  padding: 3rem 2rem;
-  max-width: 1000px;
-  width: 100%;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.8s ease-out;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
 .paywall-header {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2.5rem;
 }
 
 .paywall-logo {
-  font-size: 4rem;
+  font-size: 3rem;
   margin-bottom: 1rem;
-  animation: pulse 2s infinite;
 }
 
 .paywall-header h1 {
-  font-size: 2.5rem;
-  color: #333;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a202c;
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .paywall-header p {
-  font-size: 1.1rem;
-  color: #666;
+  font-size: 1rem;
+  color: #718096;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 .plans-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
 
 .plan-card {
-  border: 3px solid #e0e0e0;
-  border-radius: 20px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: all 0.3s;
-  position: relative;
   background: white;
+  border-radius: 12px;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 2px solid #e2e8f0;
+  transition: all 0.3s ease;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
 }
 
 .plan-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .plan-card.selected {
-  border-color: #667eea;
-  box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
-  transform: scale(1.02);
+  border-color: #38b2ac;
+  box-shadow: 0 8px 24px rgba(56, 178, 172, 0.25);
 }
 
 .plan-card.popular {
-  border-color: #f39c12;
+  border-color: #38b2ac;
 }
 
 .popular-badge {
   position: absolute;
-  top: -1px;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(135deg, #f39c12, #e67e22);
+  background: #38b2ac;
   color: white;
-  padding: 0.4rem 1.5rem;
-  border-radius: 0 0 10px 10px;
-  font-size: 0.75rem;
+  padding: 0.3rem 1.2rem;
+  border-radius: 0 0 8px 8px;
+  font-size: 0.7rem;
   font-weight: 700;
-  letter-spacing: 1px;
-  z-index: 10;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .plan-header {
@@ -97,39 +88,39 @@
 }
 
 .plan-icon {
-  font-size: 2.5rem;
+  font-size: 2rem;
   display: block;
   margin-bottom: 0.5rem;
 }
 
 .plan-header h3 {
   margin: 0;
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-weight: 700;
 }
 
 .plan-price {
   text-align: center;
   padding: 1.5rem;
-  background: #f8f9fa;
+  background: #f7fafc;
 }
 
 .currency {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 600;
-  color: #666;
+  color: #4a5568;
   vertical-align: top;
 }
 
 .amount {
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-weight: 800;
-  color: #333;
+  color: #1a202c;
 }
 
 .period {
-  font-size: 1rem;
-  color: #888;
+  font-size: 0.9rem;
+  color: #718096;
 }
 
 .plan-features {
@@ -139,30 +130,31 @@
 }
 
 .plan-features li {
-  padding: 0.5rem 0;
-  font-size: 0.9rem;
-  color: #555;
+  padding: 0.4rem 0;
+  font-size: 0.85rem;
+  color: #4a5568;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
 .check {
-  color: #2ecc71;
+  color: #48bb78;
   font-weight: bold;
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
 .plan-selector {
   padding: 1rem;
   text-align: center;
-  border-top: 1px solid #eee;
+  border-top: 1px solid #e2e8f0;
+  background: #f7fafc;
 }
 
 .radio-btn {
-  width: 24px;
-  height: 24px;
-  border: 3px solid #ddd;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #cbd5e0;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
@@ -171,15 +163,14 @@
 }
 
 .radio-btn.checked {
-  border-color: #667eea;
+  border-color: #38b2ac;
 }
 
 .radio-inner {
-  width: 12px;
-  height: 12px;
-  background: #667eea;
+  width: 10px;
+  height: 10px;
+  background: #38b2ac;
   border-radius: 50%;
-  animation: scaleIn 0.3s ease-out;
 }
 
 .paywall-actions {
@@ -189,24 +180,23 @@
 
 .btn-subscribe {
   width: 100%;
-  max-width: 400px;
-  padding: 1.2rem 2rem;
-  font-size: 1.1rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  max-width: 350px;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background: #38b2ac;
   color: white;
   border: none;
-  border-radius: 50px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s;
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-  position: relative;
-  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(56, 178, 172, 0.4);
 }
 
 .btn-subscribe:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(56, 178, 172, 0.5);
+  background: #319795;
 }
 
 .btn-subscribe:disabled {
@@ -217,9 +207,9 @@
 
 .loading-spinner {
   display: inline-block;
-  width: 24px;
-  height: 24px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   border-top-color: white;
   animation: spin 1s ease-in-out infinite;
@@ -229,32 +219,40 @@
   display: block;
   margin: 1rem auto 0;
   background: none;
-  border: none;
-  color: #667eea;
-  font-size: 1rem;
+  border: 2px solid #38b2ac;
+  color: #38b2ac;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  text-decoration: underline;
-  transition: color 0.3s;
+  padding: 0.6rem 1.5rem;
+  border-radius: 6px;
+  transition: all 0.3s;
 }
 
 .btn-trial:hover {
-  color: #764ba2;
+  background: #38b2ac;
+  color: white;
 }
 
 .btn-trial:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  border-color: #a0aec0;
+  color: #a0aec0;
+}
+
+.btn-trial:disabled:hover {
+  background: transparent;
 }
 
 .terms {
   margin-top: 1rem;
-  font-size: 0.85rem;
-  color: #888;
+  font-size: 0.8rem;
+  color: #a0aec0;
 }
 
 .terms a {
-  color: #667eea;
+  color: #38b2ac;
   text-decoration: none;
 }
 
@@ -266,71 +264,67 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  background: linear-gradient(135deg, rgba(46, 204, 113, 0.1), rgba(39, 174, 96, 0.1));
+  gap: 0.8rem;
+  background: #f0fff4;
   padding: 1rem;
-  border-radius: 15px;
+  border-radius: 8px;
   margin-bottom: 2rem;
-  border: 2px solid rgba(46, 204, 113, 0.3);
+  border: 1px solid #c6f6d5;
 }
 
 .guarantee-icon {
-  font-size: 2.5rem;
+  font-size: 2rem;
 }
 
 .guarantee-badge strong {
-  color: #27ae60;
-  font-size: 1.1rem;
+  color: #276749;
+  font-size: 0.95rem;
   display: block;
 }
 
 .guarantee-badge p {
   margin: 0;
-  font-size: 0.9rem;
-  color: #27ae60;
+  font-size: 0.85rem;
+  color: #2f855a;
 }
 
 .benefits-section {
   text-align: center;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .benefits-section h4 {
-  color: #333;
-  margin-bottom: 1.5rem;
-  font-size: 1.2rem;
+  color: #1a202c;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .benefits-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.8rem;
 }
 
 .benefit-item {
-  padding: 1rem;
-  background: #f8f9fa;
-  border-radius: 10px;
+  padding: 0.8rem;
+  background: #f7fafc;
+  border-radius: 8px;
 }
 
 .benefit-item span {
-  font-size: 2rem;
+  font-size: 1.5rem;
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.3rem;
 }
 
 .benefit-item p {
   margin: 0;
-  font-size: 0.9rem;
-  color: #555;
-}
-
-@keyframes scaleIn {
-  from {
-    transform: scale(0);
-  }
-  to {
-    transform: scale(1);
-  }
+  font-size: 0.8rem;
+  color: #4a5568;
 }
 
 @keyframes spin {
@@ -339,33 +333,13 @@
   }
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-}
-
 @media (max-width: 768px) {
-  .paywall-container {
-    padding: 2rem 1rem;
+  .paywall-screen {
+    padding: 1.5rem 1rem;
   }
 
   .paywall-header h1 {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
   }
 
   .plans-container {
@@ -373,6 +347,10 @@
   }
 
   .amount {
-    font-size: 2.5rem;
+    font-size: 2rem;
+  }
+
+  .plan-card {
+    padding: 0;
   }
 }

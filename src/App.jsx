@@ -311,31 +311,41 @@ function App() {
         {/* Action Buttons */}
         <div className="action-buttons">
           <button className="btn-action btn-dose" onClick={() => setShowDoseModal(true)}>
-            💉 Dose
+            <span>💉</span>
+            <span>Dose</span>
           </button>
           <button className="btn-action btn-weight" onClick={() => setShowWeightModal(true)}>
-            ⚖️ Peso
+            <span>⚖️</span>
+            <span>Peso</span>
           </button>
-          {checkAccess('measurements') && (
-            <button className="btn-action btn-measure" onClick={() => setShowMeasurementModal(true)}>
-              📏 Medidas
-            </button>
-          )}
-          {checkAccess('sideEffects') && (
-            <button className="btn-action btn-effect" onClick={() => setShowSideEffectModal(true)}>
-              🩺 Efeitos
-            </button>
-          )}
-          {checkAccess('nutrition') && (
-            <button className="btn-action btn-nutrition" onClick={() => setShowNutritionModal(true)}>
-              🥗 Nutrição
-            </button>
-          )}
-          {checkAccess('photos') && (
-            <button className="btn-action btn-photos" onClick={() => setShowPhotosModal(true)}>
-              📸 Fotos
-            </button>
-          )}
+          <button
+            className={`btn-action btn-measure ${!checkAccess('measurements') ? 'locked' : ''}`}
+            onClick={() => checkAccess('measurements') ? setShowMeasurementModal(true) : toast.warning('Faça upgrade para o plano Pro para acessar')}
+          >
+            <span>📏</span>
+            <span>Medidas</span>
+          </button>
+          <button
+            className={`btn-action btn-effect ${!checkAccess('sideEffects') ? 'locked' : ''}`}
+            onClick={() => checkAccess('sideEffects') ? setShowSideEffectModal(true) : toast.warning('Faça upgrade para o plano Pro para acessar')}
+          >
+            <span>🩺</span>
+            <span>Efeitos</span>
+          </button>
+          <button
+            className={`btn-action btn-nutrition ${!checkAccess('nutrition') ? 'locked' : ''}`}
+            onClick={() => checkAccess('nutrition') ? setShowNutritionModal(true) : toast.warning('Faça upgrade para o plano Pro para acessar')}
+          >
+            <span>🥗</span>
+            <span>Nutrição</span>
+          </button>
+          <button
+            className={`btn-action btn-photos ${!checkAccess('photos') ? 'locked' : ''}`}
+            onClick={() => checkAccess('photos') ? setShowPhotosModal(true) : toast.warning('Faça upgrade para o plano Pro para acessar')}
+          >
+            <span>📸</span>
+            <span>Fotos</span>
+          </button>
         </div>
 
         {/* Navigation Tabs */}
@@ -352,14 +362,12 @@ function App() {
           >
             📈 Progresso
           </button>
-          {checkAccess('avatar') && (
-            <button
-              className={`view-tab ${activeView === 'avatar' ? 'active' : ''}`}
-              onClick={() => setActiveView('avatar')}
-            >
-              🪞 Avatar
-            </button>
-          )}
+          <button
+            className={`view-tab ${activeView === 'avatar' ? 'active' : ''} ${!checkAccess('avatar') ? 'locked' : ''}`}
+            onClick={() => checkAccess('avatar') ? setActiveView('avatar') : toast.warning('Faça upgrade para o plano Pro para acessar o Avatar')}
+          >
+            🪞 Avatar
+          </button>
           <button
             className={`view-tab ${activeView === 'goals' ? 'active' : ''}`}
             onClick={() => setActiveView('goals')}
