@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { PLANS } from '../hooks/useSubscription'
 import './PaywallScreen.css'
 
-function PaywallScreen({ onSelectPlan, onStartTrial, trialUsed }) {
+function PaywallScreen({ onSelectPlan, onStartTrial, trialUsed, onClose }) {
   const [selectedPlan, setSelectedPlan] = useState('pro')
   const [isProcessing, setIsProcessing] = useState(false)
 
@@ -25,6 +25,13 @@ function PaywallScreen({ onSelectPlan, onStartTrial, trialUsed }) {
   return (
     <div className="paywall-screen">
       <div className="paywall-container">
+        {/* Botão Fechar */}
+        {onClose && (
+          <button className="paywall-close" onClick={onClose}>
+            ✕
+          </button>
+        )}
+
         {/* Header */}
         <div className="paywall-header">
           <div className="paywall-logo">💎</div>

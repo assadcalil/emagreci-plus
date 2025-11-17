@@ -1,12 +1,37 @@
 .paywall-screen {
   min-height: 100vh;
-  background: #f7fafc;
+  background: linear-gradient(135deg, #1a202c 0%, #2d3748 50%, #4a5568 100%);
   padding: 2rem 1rem;
+  position: relative;
 }
 
 .paywall-container {
   max-width: 1100px;
   margin: 0 auto;
+  position: relative;
+}
+
+.paywall-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.paywall-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
 }
 
 .paywall-header {
@@ -22,13 +47,13 @@
 .paywall-header h1 {
   font-size: 1.8rem;
   font-weight: 700;
-  color: #1a202c;
+  color: white;
   margin-bottom: 0.5rem;
 }
 
 .paywall-header p {
   font-size: 1rem;
-  color: #718096;
+  color: #a0aec0;
   max-width: 500px;
   margin: 0 auto;
 }
