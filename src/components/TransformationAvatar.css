@@ -1,21 +1,28 @@
 .avatar-container {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 2rem;
-  margin-bottom: 2rem;
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+.avatar-header {
   text-align: center;
+  margin-bottom: 1.5rem;
 }
 
 .avatar-header h3 {
   margin: 0 0 0.3rem 0;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
+  color: #1a202c;
+  font-weight: 700;
 }
 
 .avatar-subtitle {
-  margin: 0 0 2rem 0;
-  opacity: 0.8;
-  font-size: 0.95rem;
+  margin: 0;
+  color: #718096;
+  font-size: 0.9rem;
 }
 
 .avatar-display {
@@ -23,93 +30,69 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 3rem;
-  margin-bottom: 2rem;
+  gap: 2.5rem;
+  margin-bottom: 1.5rem;
 }
 
-/* Avatar Body */
+/* Avatar Body - Silhueta Profissional */
 .avatar-body {
   position: relative;
-  width: 120px;
-  height: 200px;
+  width: 100px;
+  height: 180px;
   transition: all 0.8s ease;
 }
 
 .avatar-head {
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+  width: 40px;
+  height: 40px;
+  background: #4a5568;
   border-radius: 50%;
-  margin: 0 auto 10px;
+  margin: 0 auto 8px;
   position: relative;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .avatar-face {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-}
-
-.avatar-eyes {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  font-size: 0.8rem;
-  margin-bottom: 5px;
-}
-
-.avatar-smile {
-  font-size: 1.2rem;
+  display: none;
 }
 
 .avatar-torso {
-  width: 80px;
-  height: 90px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  border-radius: 20px 20px 30px 30px;
+  width: 60px;
+  height: 80px;
+  background: #4a5568;
+  border-radius: 8px 8px 12px 12px;
   margin: 0 auto;
   position: relative;
-  overflow: hidden;
   transition: all 0.8s ease;
 }
 
 .torso-inner {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  right: 10px;
-  bottom: 10px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
+  display: none;
 }
 
 .avatar-arms {
   position: absolute;
-  top: 80px;
+  top: 55px;
   left: 0;
   right: 0;
 }
 
 .arm {
   position: absolute;
-  width: 20px;
-  height: 60px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  border-radius: 10px;
+  width: 14px;
+  height: 50px;
+  background: #4a5568;
+  border-radius: 7px;
   transition: all 0.8s ease;
 }
 
 .arm.left {
-  left: 5px;
-  transform: rotate(-10deg);
+  left: 10px;
+  transform: rotate(-8deg);
 }
 
 .arm.right {
-  right: 5px;
-  transform: rotate(10deg);
+  right: 10px;
+  transform: rotate(8deg);
 }
 
 .avatar-legs {
@@ -118,122 +101,106 @@
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 10px;
+  gap: 6px;
 }
 
 .leg {
-  width: 25px;
-  height: 50px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  border-radius: 10px;
+  width: 18px;
+  height: 45px;
+  background: #4a5568;
+  border-radius: 6px;
   transition: all 0.8s ease;
 }
 
-/* Fases do Avatar */
+/* Fases do Avatar - Transição Suave */
 .phase-1 .avatar-torso {
-  width: 100px;
-  height: 100px;
-}
-
-.phase-1 .arm {
-  width: 25px;
-}
-
-.phase-1 .leg {
-  width: 30px;
-}
-
-.phase-2 .avatar-torso {
-  width: 90px;
-  height: 95px;
-}
-
-.phase-2 .arm {
-  width: 23px;
-}
-
-.phase-2 .leg {
-  width: 28px;
-}
-
-.phase-3 .avatar-torso {
   width: 80px;
   height: 90px;
 }
 
-.phase-4 .avatar-torso {
-  width: 70px;
-  height: 85px;
-}
-
-.phase-4 .arm {
+.phase-1 .arm {
   width: 18px;
 }
 
-.phase-4 .leg {
-  width: 22px;
+.phase-1 .leg {
+  width: 24px;
 }
 
-.phase-5 .avatar-torso {
-  width: 60px;
-  height: 80px;
+.phase-2 .avatar-torso {
+  width: 72px;
+  height: 86px;
 }
 
-.phase-5 .arm {
+.phase-2 .arm {
   width: 16px;
 }
 
-.phase-5 .leg {
+.phase-2 .leg {
+  width: 22px;
+}
+
+.phase-3 .avatar-torso {
+  width: 64px;
+  height: 82px;
+}
+
+.phase-3 .arm {
+  width: 15px;
+}
+
+.phase-3 .leg {
   width: 20px;
 }
 
-/* Efeitos Visuais */
+.phase-4 .avatar-torso {
+  width: 56px;
+  height: 78px;
+}
+
+.phase-4 .arm {
+  width: 13px;
+}
+
+.phase-4 .leg {
+  width: 17px;
+}
+
+.phase-5 .avatar-torso {
+  width: 50px;
+  height: 74px;
+}
+
+.phase-5 .arm {
+  width: 12px;
+}
+
+.phase-5 .leg {
+  width: 15px;
+}
+
+/* Efeitos Visuais - Mais Sutis */
 .transformation-glow {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 150%;
-  height: 150%;
-  background: radial-gradient(circle, rgba(102, 126, 234, 0.3) 0%, transparent 70%);
+  width: 120%;
+  height: 120%;
+  background: radial-gradient(circle, rgba(56, 178, 172, 0.15) 0%, transparent 70%);
   border-radius: 50%;
-  animation: glowPulse 3s ease-in-out infinite;
+  animation: glowPulse 4s ease-in-out infinite;
   pointer-events: none;
 }
 
 .achievement-particles {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 1.5rem;
+  display: none;
 }
 
-.achievement-particles span {
-  position: absolute;
-  animation: particleFloat 2s ease-in-out infinite;
-}
-
-.achievement-particles span:nth-child(1) {
-  left: -30px;
-  animation-delay: 0s;
-}
-
-.achievement-particles span:nth-child(2) {
-  left: 0;
-  animation-delay: 0.3s;
-}
-
-.achievement-particles span:nth-child(3) {
-  left: 30px;
-  animation-delay: 0.6s;
-}
-
-/* Progress Ring */
+/* Progress Ring - Elegante */
 .progress-ring {
   position: relative;
-  width: 150px;
-  height: 150px;
+  width: 130px;
+  height: 130px;
 }
 
 .progress-ring svg {
@@ -242,7 +209,7 @@
 
 .progress-ring-bg {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.2);
+  stroke: #e2e8f0;
   stroke-width: 8;
 }
 
@@ -264,46 +231,49 @@
 
 .progress-value {
   display: block;
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: 800;
+  color: #1a202c;
 }
 
 .progress-label {
   display: block;
-  font-size: 0.8rem;
-  opacity: 0.8;
+  font-size: 0.75rem;
+  color: #718096;
 }
 
 /* Stats */
 .avatar-stats {
   display: flex;
   justify-content: center;
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .stat-item {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 0.8rem 1rem;
-  border-radius: 10px;
+  background: #f7fafc;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
 }
 
 .stat-icon {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
 }
 
 .stat-item strong {
   display: block;
-  font-size: 1.1rem;
+  font-size: 0.95rem;
+  color: #1a202c;
 }
 
 .stat-item small {
   display: block;
-  font-size: 0.75rem;
-  opacity: 0.8;
+  font-size: 0.7rem;
+  color: #718096;
 }
 
 /* Motivational Banner */
@@ -311,56 +281,59 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.8rem;
-  padding: 1rem;
-  border-radius: 15px;
-  margin-bottom: 1.5rem;
-  animation: slideIn 0.5s ease-out;
+  gap: 0.6rem;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background: #f0fff4;
+  border: 1px solid #c6f6d5;
 }
 
 .motivation-icon {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
 }
 
 .motivational-banner p {
   margin: 0;
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
+  color: #276749;
 }
 
 /* Milestones */
 .avatar-milestones {
   display: flex;
   justify-content: center;
-  gap: 1rem;
+  gap: 0.8rem;
 }
 
 .milestone {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.8rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  background: #f7fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
   opacity: 0.5;
   transition: all 0.3s;
 }
 
 .milestone.achieved {
   opacity: 1;
-  background: rgba(46, 204, 113, 0.3);
-  transform: scale(1.1);
-  animation: achievementPop 0.5s ease-out;
+  background: #f0fff4;
+  border-color: #68d391;
 }
 
 .milestone span {
-  font-size: 1.5rem;
-  margin-bottom: 0.3rem;
+  font-size: 1.2rem;
+  margin-bottom: 0.2rem;
 }
 
 .milestone small {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
+  color: #4a5568;
 }
 
 /* Animations */
@@ -370,56 +343,31 @@
     transform: translate(-50%, -50%) scale(1);
   }
   50% {
-    opacity: 0.6;
-    transform: translate(-50%, -50%) scale(1.1);
-  }
-}
-
-@keyframes particleFloat {
-  0%, 100% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 1;
-  }
-  50% {
-    transform: translateY(-20px) rotate(180deg);
     opacity: 0.5;
-  }
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes achievementPop {
-  0% {
-    transform: scale(0.5);
-  }
-  50% {
-    transform: scale(1.3);
-  }
-  100% {
-    transform: scale(1.1);
+    transform: translate(-50%, -50%) scale(1.05);
   }
 }
 
 @media (max-width: 600px) {
   .avatar-display {
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem;
   }
 
   .avatar-stats {
     flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .stat-item {
+    flex: 1 1 40%;
   }
 
   .avatar-milestones {
     flex-wrap: wrap;
+  }
+
+  .milestone {
+    flex: 1 1 40%;
   }
 }

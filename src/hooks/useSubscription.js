@@ -142,10 +142,10 @@ export function useSubscription() {
     if (trialUsed) return false
 
     const now = new Date()
-    const expiresAt = new Date(now.setDate(now.getDate() + 7)) // 7 dias trial
+    const expiresAt = new Date(now.setDate(now.getDate() + 3)) // 3 dias trial
 
     setSubscription({
-      planId: 'pro',
+      planId: 'basic', // Trial no plano básico
       startDate: new Date().toISOString(),
       expiresAt: expiresAt.toISOString(),
       status: 'trial'
