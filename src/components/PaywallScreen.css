@@ -3,12 +3,68 @@
   background: linear-gradient(135deg, #1a202c 0%, #2d3748 50%, #4a5568 100%);
   padding: 2rem 1rem;
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 .paywall-container {
   max-width: 1100px;
+  width: 100%;
   margin: 0 auto;
   position: relative;
+}
+
+/* Desktop Large */
+@media (min-width: 1400px) {
+  .paywall-screen {
+    padding: 3rem 2rem;
+  }
+
+  .paywall-container {
+    max-width: 1300px;
+  }
+
+  .paywall-header h1 {
+    font-size: 2.2rem;
+  }
+
+  .paywall-header p {
+    font-size: 1.1rem;
+  }
+
+  .plan-card {
+    border-radius: 16px;
+  }
+
+  .amount {
+    font-size: 3rem;
+  }
+
+  .plan-features li {
+    font-size: 0.95rem;
+    padding: 0.5rem 0;
+  }
+}
+
+@media (min-width: 1600px) {
+  .paywall-container {
+    max-width: 1500px;
+  }
+
+  .paywall-header h1 {
+    font-size: 2.5rem;
+  }
+
+  .plans-container {
+    gap: 2rem;
+  }
+
+  .btn-subscribe {
+    max-width: 450px;
+    padding: 1.2rem 2.5rem;
+    font-size: 1.1rem;
+  }
 }
 
 .paywall-close {

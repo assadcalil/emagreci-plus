@@ -17,6 +17,47 @@
   animation: slideIn 0.5s ease-out;
 }
 
+/* Desktop - Aumentar tamanho do quiz */
+@media (min-width: 1200px) {
+  .question-container {
+    max-width: 600px;
+    padding: 3rem;
+  }
+
+  .question-icon {
+    font-size: 4rem;
+  }
+
+  .question-text {
+    font-size: 1.6rem;
+  }
+
+  .input-field {
+    padding: 1.1rem 1.2rem;
+    font-size: 1.1rem;
+  }
+
+  .option-button {
+    padding: 1.1rem 1.2rem;
+    font-size: 1.05rem;
+  }
+}
+
+@media (min-width: 1600px) {
+  .question-container {
+    max-width: 700px;
+    padding: 3.5rem;
+  }
+
+  .question-icon {
+    font-size: 4.5rem;
+  }
+
+  .question-text {
+    font-size: 1.8rem;
+  }
+}
+
 .question-icon {
   font-size: 3rem;
   text-align: center;
