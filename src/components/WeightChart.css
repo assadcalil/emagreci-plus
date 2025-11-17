@@ -1,0 +1,19 @@
+.weight-chart {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 15px;
+  margin: 1.5rem 0;
+}
+
+.chart-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  margin: 1.5rem 0;
+}
+
+.chart-empty p {
+  font-size: 1.1rem;
+  opacity: 0.8;
+}
