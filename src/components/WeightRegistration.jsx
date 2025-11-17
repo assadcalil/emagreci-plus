@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { validateWeight, validateDate } from '../utils/validation'
 import './WeightRegistration.css'
 
 function WeightRegistration({ onSave, onClose, currentWeight }) {
@@ -7,22 +8,33 @@ function WeightRegistration({ onSave, onClose, currentWeight }) {
     peso: currentWeight || '',
     observacoes: ''
   })
+  const [errors, setErrors] = useState({})
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    
-    // Salvar no localStorage
-    const weights = JSON.parse(localStorage.getItem('weights') || '[]')
-    const newWeight = {
-      ...weightData,
-      id: Date.now(),
-      timestamp: new Date().toISOString(),
-      peso: parseFloat(weightData.peso)
+    const newErrors = {}
+
+    // Validar peso
+    const weightValidation = validateWeight(weightData.peso)
+    if (!weightValidation.valid) {
+      newErrors.peso = weightValidation.error
     }
-    weights.push(newWeight)
-    localStorage.setItem('weights', JSON.stringify(weights))
-    
-    onSave(newWeight)
+
+    // Validar data
+    const dateValidation = validateDate(weightData.data)
+    if (!dateValidation.valid) {
+      newErrors.data = dateValidation.error
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
+    }
+
+    onSave({
+      ...weightData,
+      peso: parseFloat(weightData.peso)
+    })
   }
 
   return (
@@ -35,35 +47,50 @@ function WeightRegistration({ onSave, onClose, currentWeight }) {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Data</label>
+            <label>📅 Data</label>
             <input
               type="date"
               value={weightData.data}
-              onChange={(e) => setWeightData({...weightData, data: e.target.value})}
+              onChange={(e) => {
+                setWeightData({ ...weightData, data: e.target.value })
+                setErrors({ ...errors, data: null })
+              }}
+              className={errors.data ? 'input-error' : ''}
               required
             />
+            {errors.data && <span className="error-text">{errors.data}</span>}
           </div>
 
           <div className="form-group">
-            <label>Peso (kg)</label>
+            <label>⚖️ Peso (kg)</label>
             <input
               type="number"
               step="0.1"
+              min="20"
+              max="400"
               placeholder="Ex: 85.5"
               value={weightData.peso}
-              onChange={(e) => setWeightData({...weightData, peso: e.target.value})}
+              onChange={(e) => {
+                setWeightData({ ...weightData, peso: e.target.value })
+                setErrors({ ...errors, peso: null })
+              }}
+              className={errors.peso ? 'input-error' : ''}
               required
             />
+            {errors.peso && <span className="error-text">{errors.peso}</span>}
+            <small className="input-hint">Pese-se sempre no mesmo horário para maior precisão</small>
           </div>
 
           <div className="form-group">
-            <label>Observações (opcional)</label>
+            <label>💭 Observações (opcional)</label>
             <textarea
               rows="3"
               placeholder="Como você está se sentindo? Mudanças notadas?"
               value={weightData.observacoes}
-              onChange={(e) => setWeightData({...weightData, observacoes: e.target.value})}
+              onChange={(e) => setWeightData({ ...weightData, observacoes: e.target.value })}
+              maxLength={500}
             />
+            <small className="input-hint">{weightData.observacoes.length}/500 caracteres</small>
           </div>
 
           <div className="form-actions">
