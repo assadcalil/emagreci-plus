@@ -620,6 +620,70 @@
   .landing-hero {
     padding: 5rem 10%;
   }
+
+  .features-grid {
+    max-width: 1400px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
+  }
+
+  .testimonials-grid {
+    max-width: 1400px;
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .pricing-cards {
+    max-width: 1200px;
+  }
+}
+
+/* RESPONSIVE - DESKTOP EXTRA LARGE */
+@media (min-width: 1600px) {
+  .hero-title {
+    font-size: 4.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.4rem;
+  }
+
+  .section-title {
+    font-size: 3.5rem;
+  }
+
+  .landing-hero {
+    padding: 6rem 12%;
+  }
+
+  .landing-features,
+  .landing-testimonials,
+  .landing-pricing {
+    padding: 6rem 8%;
+  }
+
+  .features-grid {
+    max-width: 1600px;
+  }
+
+  .feature-card {
+    padding: 2.5rem;
+  }
+
+  .feature-icon {
+    font-size: 3.5rem;
+  }
+
+  .feature-title {
+    font-size: 1.5rem;
+  }
+
+  .testimonials-grid {
+    max-width: 1600px;
+  }
+
+  .pricing-cards {
+    max-width: 1400px;
+  }
 }
 
 /* RESPONSIVE - TABLET */
