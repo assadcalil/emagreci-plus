@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import QuizQuestion from './components/QuizQuestion'
 import DoseRegistration from './components/DoseRegistration'
 import WeightRegistration from './components/WeightRegistration'
