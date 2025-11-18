@@ -402,6 +402,145 @@ Apresente-o ao seu médico para acompanhamento do tratamento.
       `
     }
 
+    // Generate measurement avatar visualization
+    const generateMeasurementAvatar = () => {
+      if (sortedMeasurements.length === 0) return ''
+
+      const first = sortedMeasurements[0]
+      const last = sortedMeasurements[sortedMeasurements.length - 1]
+      const hasMultiple = sortedMeasurements.length > 1
+
+      const getMeasurementData = (field, label, icon) => {
+        const initialVal = first[field] || 0
+        const currentVal = last[field] || 0
+        const diff = initialVal - currentVal
+        const percentage = initialVal > 0 ? ((diff / initialVal) * 100).toFixed(1) : 0
+
+        if (!initialVal && !currentVal) return null
+
+        return {
+          label,
+          icon,
+          initial: initialVal,
+          current: currentVal,
+          diff,
+          percentage
+        }
+      }
+
+      const measurements = {
+        pescoco: getMeasurementData('pescoco', 'Pescoço', '📍'),
+        braco: getMeasurementData('braco', 'Braço', '💪'),
+        cintura: getMeasurementData('cintura', 'Cintura', '📏'),
+        quadril: getMeasurementData('quadril', 'Quadril', '📐'),
+        coxa: getMeasurementData('coxa', 'Coxa', '🦵')
+      }
+
+      const renderBadge = (data, top, left) => {
+        if (!data) return ''
+
+        return `
+          <div style="position: absolute; top: ${top}px; left: ${left}px; background: white; border: 2px solid #667eea; border-radius: 8px; padding: 8px 10px; min-width: 120px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <div style="font-size: 10px; font-weight: 700; color: #667eea; margin-bottom: 4px; text-transform: uppercase;">${data.icon} ${data.label}</div>
+            ${hasMultiple ? `
+              <div style="font-size: 10px; color: #64748b; margin-bottom: 2px;">
+                <span style="font-size: 9px;">Inicial:</span>
+                <span style="font-weight: 600; color: #2d3748; margin-left: 4px;">${data.initial.toFixed(1)} cm</span>
+              </div>
+              <div style="font-size: 10px; color: #64748b; margin-bottom: 2px;">
+                <span style="font-size: 9px;">Atual:</span>
+                <span style="font-weight: 600; color: #667eea; margin-left: 4px;">${data.current.toFixed(1)} cm</span>
+              </div>
+              ${data.diff !== 0 ? `
+                <div style="font-size: 10px; font-weight: 700; margin-top: 4px; padding: 3px 6px; border-radius: 4px; background: ${data.diff > 0 ? '#d1fae5' : '#fee2e2'}; color: ${data.diff > 0 ? '#065f46' : '#991b1b'};">
+                  ${data.diff > 0 ? '▼' : '▲'} ${Math.abs(data.diff).toFixed(1)} cm (${data.percentage}%)
+                </div>
+              ` : ''}
+            ` : `
+              <div style="font-size: 11px; font-weight: 600; color: #667eea;">${data.current.toFixed(1)} cm</div>
+            `}
+          </div>
+        `
+      }
+
+      return `
+        <div style="page-break-inside: avoid; margin-bottom: 20px;">
+          <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08);">
+            <div style="text-align: center; margin-bottom: 15px;">
+              <div style="font-size: 16px; font-weight: 700; color: #2d3748; margin-bottom: 5px;">📊 Avatar de Medidas Corporais</div>
+              ${hasMultiple ? `
+                <div style="font-size: 12px; color: #64748b;">Comparação: Primeira x Última Medição</div>
+              ` : `
+                <div style="font-size: 12px; color: #64748b;">Medições Registradas</div>
+              `}
+            </div>
+
+            <div style="position: relative; width: 100%; max-width: 600px; margin: 0 auto; min-height: 400px;">
+              <!-- Avatar SVG -->
+              <div style="text-align: center;">
+                <svg width="200" height="400" viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg" style="display: inline-block;">
+                  <!-- Cabeça -->
+                  <circle cx="100" cy="40" r="25" fill="#ffd6a5" stroke="#333" stroke-width="2"/>
+                  <!-- Pescoço -->
+                  <rect x="92" y="60" width="16" height="20" fill="#ffd6a5" stroke="#333" stroke-width="2"/>
+                  <line x1="92" y1="70" x2="80" y2="70" stroke="#667eea" stroke-width="2" stroke-dasharray="3,3"/>
+                  <line x1="108" y1="70" x2="120" y2="70" stroke="#667eea" stroke-width="2" stroke-dasharray="3,3"/>
+                  <!-- Corpo/Tronco -->
+                  <ellipse cx="100" cy="130" rx="35" ry="55" fill="#a0c4ff" stroke="#333" stroke-width="2"/>
+                  <!-- Linha de cintura -->
+                  <line x1="65" y1="150" x2="50" y2="150" stroke="#667eea" stroke-width="2" stroke-dasharray="3,3"/>
+                  <line x1="135" y1="150" x2="150" y2="150" stroke="#667eea" stroke-width="2" stroke-dasharray="3,3"/>
+                  <!-- Braço Esquerdo -->
+                  <ellipse cx="70" cy="110" rx="12" ry="40" fill="#ffd6a5" stroke="#333" stroke-width="2" transform="rotate(-10 70 110)"/>
+                  <line x1="70" y1="100" x2="55" y2="100" stroke="#667eea" stroke-width="2" stroke-dasharray="3,3"/>
+                  <!-- Braço Direito -->
+                  <ellipse cx="130" cy="110" rx="12" ry="40" fill="#ffd6a5" stroke="#333" stroke-width="2" transform="rotate(10 130 110)"/>
+                  <line x1="130" y1="100" x2="145" y2="100" stroke="#667eea" stroke-width="2" stroke-dasharray="3,3"/>
+                  <!-- Quadril -->
+                  <ellipse cx="100" cy="200" rx="38" ry="25" fill="#a0c4ff" stroke="#333" stroke-width="2"/>
+                  <line x1="62" y1="200" x2="45" y2="200" stroke="#667eea" stroke-width="2" stroke-dasharray="3,3"/>
+                  <line x1="138" y1="200" x2="155" y2="200" stroke="#667eea" stroke-width="2" stroke-dasharray="3,3"/>
+                  <!-- Perna Esquerda -->
+                  <ellipse cx="85" cy="290" rx="18" ry="80" fill="#a0c4ff" stroke="#333" stroke-width="2"/>
+                  <line x1="85" y1="250" x2="65" y2="250" stroke="#667eea" stroke-width="2" stroke-dasharray="3,3"/>
+                  <!-- Perna Direita -->
+                  <ellipse cx="115" cy="290" rx="18" ry="80" fill="#a0c4ff" stroke="#333" stroke-width="2"/>
+                  <line x1="115" y1="250" x2="135" y2="250" stroke="#667eea" stroke-width="2" stroke-dasharray="3,3"/>
+                  <!-- Pés -->
+                  <ellipse cx="85" cy="370" rx="12" ry="8" fill="#333"/>
+                  <ellipse cx="115" cy="370" rx="12" ry="8" fill="#333"/>
+                </svg>
+              </div>
+
+              <!-- Badges de medidas -->
+              <div style="position: relative; margin-top: -400px;">
+                ${renderBadge(measurements.pescoco, 50, 420)}
+                ${renderBadge(measurements.braco, 80, 10)}
+                ${renderBadge(measurements.cintura, 130, 420)}
+                ${renderBadge(measurements.quadril, 180, 420)}
+                ${renderBadge(measurements.coxa, 230, 10)}
+              </div>
+            </div>
+
+            ${hasMultiple ? `
+              <div style="margin-top: 420px; padding-top: 15px; border-top: 2px solid #f0f0f0; text-align: center;">
+                <div style="display: inline-flex; gap: 20px; justify-content: center; font-size: 11px; color: #64748b;">
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="font-size: 14px; font-weight: bold; color: #10b981;">▼</span>
+                    <span>Redução (Progresso Positivo)</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="font-size: 14px; font-weight: bold; color: #ef4444;">▲</span>
+                    <span>Aumento</span>
+                  </div>
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `
+    }
+
     // Calculate measurements changes
     const getMeasurementsChanges = () => {
       if (sortedMeasurements.length < 2) return ''
@@ -602,6 +741,7 @@ Apresente-o ao seu médico para acompanhamento do tratamento.
         ` : ''}
 
         ${sortedMeasurements.length > 0 ? `
+        ${generateMeasurementAvatar()}
         ${getMeasurementsChanges()}
         ${generateMeasurementsChart()}
         ` : ''}

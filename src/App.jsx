@@ -18,6 +18,8 @@ import ProgressPhotos from './components/ProgressPhotos'
 import LandingPage from './components/LandingPage'
 import AuthScreen from './components/AuthScreen'
 import CommunityChat from './components/CommunityChat'
+import PlanDropdown from './components/PlanDropdown'
+import MeasurementAvatar from './components/MeasurementAvatar'
 import { ToastContainer } from './components/Toast'
 import { useToast } from './hooks/useToast'
 import { useAuth } from './hooks/useAuth'
@@ -452,9 +454,29 @@ function App() {
         <div className="dashboard-header">
           <div>
             <h1>Olá, {userName.split(' ')[0]}! 👋</h1>
-            <p>Plano {currentPlan?.name} {currentPlan?.icon}</p>
           </div>
           <div className="header-actions">
+            <PlanDropdown
+              subscription={subscription}
+              onUpgrade={(plan) => {
+                setShowPaywall(true)
+                toast.info(`Faça upgrade para o plano ${plan.name} e tenha acesso a recursos exclusivos!`)
+              }}
+              onSupport={() => {
+                const supportType = currentPlan?.features.support || 'email'
+                if (supportType === 'priority') {
+                  toast.info('Suporte prioritário: suporte@emagreciplus.com.br (24/7)')
+                } else if (supportType === 'chat') {
+                  toast.info('Suporte via chat disponível no horário comercial')
+                } else {
+                  toast.info('Suporte via email: suporte@emagreciplus.com.br')
+                }
+              }}
+              onManage={() => {
+                toast.info('Redirecionando para o portal de gerenciamento...')
+                // Aqui você pode integrar com o Stripe Portal
+              }}
+            />
             <button className="btn-icon" onClick={() => setShowReminderModal(true)} title="Lembretes">
               ⏰
             </button>
@@ -596,6 +618,13 @@ function App() {
 
             {checkAccess('injectionMap') && <InjectionMap doses={doses} />}
 
+            {measurements.length > 0 && checkAccess('measurements') && (
+              <div className="section">
+                <h2>📏 Suas Medidas Corporais</h2>
+                <MeasurementAvatar measurements={measurements} showProgress={true} />
+              </div>
+            )}
+
             <div className="section">
               <h2>📅 Doses Recentes</h2>
               {doses.length === 0 ? (
@@ -638,22 +667,29 @@ function App() {
             </div>
 
             {measurements.length > 0 && checkAccess('measurements') && (
-              <div className="section">
-                <h2>📏 Últimas Medidas</h2>
-                <div className="measurements-list">
-                  {measurements.slice(-3).reverse().map(m => (
-                    <div key={m.id} className="measurement-item">
-                      <div className="measurement-date">{formatDate(m.data)}</div>
-                      <div className="measurement-values">
-                        {m.cintura && <span>Cintura: {m.cintura}cm</span>}
-                        {m.quadril && <span>Quadril: {m.quadril}cm</span>}
-                        {m.braco && <span>Braço: {m.braco}cm</span>}
-                        {m.coxa && <span>Coxa: {m.coxa}cm</span>}
-                      </div>
-                    </div>
-                  ))}
+              <>
+                <div className="section">
+                  <h2>📏 Avatar de Medidas Corporais</h2>
+                  <MeasurementAvatar measurements={measurements} showProgress={true} />
                 </div>
-              </div>
+
+                <div className="section">
+                  <h2>📋 Últimas Medidas</h2>
+                  <div className="measurements-list">
+                    {measurements.slice(-3).reverse().map(m => (
+                      <div key={m.id} className="measurement-item">
+                        <div className="measurement-date">{formatDate(m.data)}</div>
+                        <div className="measurement-values">
+                          {m.cintura && <span>Cintura: {m.cintura}cm</span>}
+                          {m.quadril && <span>Quadril: {m.quadril}cm</span>}
+                          {m.braco && <span>Braço: {m.braco}cm</span>}
+                          {m.coxa && <span>Coxa: {m.coxa}cm</span>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
             )}
 
             {sideEffects.length > 0 && checkAccess('sideEffects') && (
