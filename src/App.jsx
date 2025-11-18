@@ -15,6 +15,7 @@ import TransformationAvatar from './components/TransformationAvatar'
 import NutritionTracker from './components/NutritionTracker'
 import InjectionMap from './components/InjectionMap'
 import ProgressPhotos from './components/ProgressPhotos'
+import PhotoComparison from './components/PhotoComparison'
 import LandingPage from './components/LandingPage'
 import AuthScreen from './components/AuthScreen'
 import CommunityChat from './components/CommunityChat'
@@ -56,6 +57,7 @@ function App() {
   const [showReminderModal, setShowReminderModal] = useState(false)
   const [showNutritionModal, setShowNutritionModal] = useState(false)
   const [showPhotosModal, setShowPhotosModal] = useState(false)
+  const [showPhotoComparisonModal, setShowPhotoComparisonModal] = useState(false)
 
   // View state
   const [activeView, setActiveView] = useState('dashboard')
@@ -565,6 +567,13 @@ function App() {
             <span>📸</span>
             <span>Fotos</span>
           </button>
+          <button
+            className={`btn-action btn-comparison ${!checkAccess('photos') ? 'locked' : ''}`}
+            onClick={() => checkAccess('photos') ? setShowPhotoComparisonModal(true) : toast.warning('Faça upgrade para o plano Pro')}
+          >
+            <span>🔄</span>
+            <span>Comparação</span>
+          </button>
         </div>
 
         {/* Navigation Tabs */}
@@ -850,6 +859,10 @@ function App() {
 
       {showPhotosModal && (
         <ProgressPhotos photos={[]} onAddPhoto={handleAddPhoto} maxPhotos={checkAccess('photos') === true ? null : checkAccess('photos')} onClose={() => setShowPhotosModal(false)} />
+      )}
+
+      {showPhotoComparisonModal && (
+        <PhotoComparison photos={[]} measurements={measurements} onClose={() => setShowPhotoComparisonModal(false)} />
       )}
 
       {showHistoryModal && (
