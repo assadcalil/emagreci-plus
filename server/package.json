@@ -1,0 +1,24 @@
+{
+  "name": "emagreci-plus-server",
+  "version": "1.0.0",
+  "description": "Stripe backend server for Emagreci+",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["stripe", "payments", "subscription"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.81.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.2",
+    "stripe": "^14.25.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3"
+  }
+}
