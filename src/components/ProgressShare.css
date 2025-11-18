@@ -1,0 +1,244 @@
+.modal-progress-share {
+  max-width: 900px !important;
+  max-height: 95vh;
+  overflow-y: auto;
+}
+
+.no-progress-data {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: var(--background);
+  border-radius: 12px;
+  border: 1px dashed var(--border);
+  margin-bottom: 1.5rem;
+}
+
+.no-progress-data p {
+  font-size: 1.2rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.no-progress-data small {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+/* Share Controls */
+.share-controls {
+  background: var(--background);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+
+.control-group {
+  margin-bottom: 1.5rem;
+}
+
+.control-group:last-child {
+  margin-bottom: 0;
+}
+
+.control-group label {
+  display: block;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.8rem;
+  font-size: 0.95rem;
+}
+
+.style-buttons {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.style-btn {
+  flex: 1;
+  min-width: 120px;
+  padding: 1rem;
+  border: 3px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 600;
+  color: white;
+}
+
+.style-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.style-btn.active {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+}
+
+.control-group input[type="text"] {
+  width: 100%;
+  padding: 0.8rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.control-group input[type="text"]:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Card Preview */
+.card-preview {
+  background: var(--background);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.card-preview h3 {
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.preview-canvas {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Share Actions */
+.share-actions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-download,
+.btn-share {
+  flex: 1;
+  min-width: 200px;
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-download {
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  color: white;
+}
+
+.btn-download:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+}
+
+.btn-share {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: white;
+}
+
+.btn-share:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+}
+
+/* Share Tips */
+.share-tips {
+  background: var(--background);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+
+.share-tips h4 {
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.share-tips ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: var(--text-secondary);
+}
+
+.share-tips li {
+  margin-bottom: 0.6rem;
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modal-progress-share {
+    max-width: 95% !important;
+  }
+
+  .style-buttons {
+    gap: 0.5rem;
+  }
+
+  .style-btn {
+    min-width: 100px;
+    padding: 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .share-actions {
+    flex-direction: column;
+  }
+
+  .btn-download,
+  .btn-share {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .share-controls,
+  .card-preview,
+  .share-tips {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .no-progress-data {
+    padding: 2rem 1rem;
+  }
+
+  .no-progress-data p {
+    font-size: 1.1rem;
+  }
+
+  .style-buttons {
+    flex-direction: column;
+  }
+
+  .style-btn {
+    min-width: unset;
+  }
+
+  .control-group label,
+  .card-preview h3,
+  .share-tips h4 {
+    font-size: 1rem;
+  }
+
+  .share-tips li {
+    font-size: 0.9rem;
+  }
+}

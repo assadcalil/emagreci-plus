@@ -19,6 +19,9 @@ import PhotoComparison from './components/PhotoComparison'
 import MeasurementGoals from './components/MeasurementGoals'
 import AdvancedMeasurementChart from './components/AdvancedMeasurementChart'
 import MeasurementReminder from './components/MeasurementReminder'
+import HealthCalculator from './components/HealthCalculator'
+import ProgressShare from './components/ProgressShare'
+import ThemeToggle from './components/ThemeToggle'
 import LandingPage from './components/LandingPage'
 import AuthScreen from './components/AuthScreen'
 import CommunityChat from './components/CommunityChat'
@@ -27,6 +30,7 @@ import MeasurementAvatar from './components/MeasurementAvatar'
 import { ToastContainer } from './components/Toast'
 import { useToast } from './hooks/useToast'
 import { useAuth } from './hooks/useAuth'
+import { useDarkMode } from './hooks/useDarkMode'
 import {
   useSupabaseProfile,
   useSupabaseDoses,
@@ -64,6 +68,8 @@ function App() {
   const [showMeasurementGoalsModal, setShowMeasurementGoalsModal] = useState(false)
   const [showAdvancedChartModal, setShowAdvancedChartModal] = useState(false)
   const [showMeasurementReminderModal, setShowMeasurementReminderModal] = useState(false)
+  const [showHealthCalculatorModal, setShowHealthCalculatorModal] = useState(false)
+  const [showProgressShareModal, setShowProgressShareModal] = useState(false)
 
   // View state
   const [activeView, setActiveView] = useState('dashboard')
@@ -95,6 +101,9 @@ function App() {
     isSubscribed,
     getDaysRemaining
   } = useSupabaseSubscription(user?.id)
+
+  // Dark Mode
+  const { darkMode, toggleDarkMode } = useDarkMode()
 
   // Community Chat
   const {
@@ -601,6 +610,20 @@ function App() {
             <span>🔔</span>
             <span>Lembretes</span>
           </button>
+          <button
+            className="btn-action btn-calculator"
+            onClick={() => setShowHealthCalculatorModal(true)}
+          >
+            <span>🧮</span>
+            <span>Calculadoras</span>
+          </button>
+          <button
+            className="btn-action btn-share"
+            onClick={() => setShowProgressShareModal(true)}
+          >
+            <span>📢</span>
+            <span>Compartilhar</span>
+          </button>
         </div>
 
         {/* Navigation Tabs */}
@@ -904,6 +927,14 @@ function App() {
         <MeasurementReminder measurements={measurements} onClose={() => setShowMeasurementReminderModal(false)} />
       )}
 
+      {showHealthCalculatorModal && (
+        <HealthCalculator profile={profile} measurements={measurements} weights={weights} onClose={() => setShowHealthCalculatorModal(false)} />
+      )}
+
+      {showProgressShareModal && (
+        <ProgressShare measurements={measurements} weights={weights} profile={profile} onClose={() => setShowProgressShareModal(false)} />
+      )}
+
       {showHistoryModal && (
         <HistoryPanel
           doses={doses}
@@ -945,6 +976,7 @@ function App() {
         />
       )}
 
+      <ThemeToggle darkMode={darkMode} onToggle={toggleDarkMode} />
       <ToastContainer toasts={toast.toasts} removeToast={toast.removeToast} />
     </div>
   )
