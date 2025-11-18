@@ -402,7 +402,7 @@ Apresente-o ao seu médico para acompanhamento do tratamento.
       `
     }
 
-    // Generate measurement avatar visualization
+    // Generate measurement avatar visualization (InBody Style)
     const generateMeasurementAvatar = () => {
       if (sortedMeasurements.length === 0) return ''
 
@@ -410,7 +410,7 @@ Apresente-o ao seu médico para acompanhamento do tratamento.
       const last = sortedMeasurements[sortedMeasurements.length - 1]
       const hasMultiple = sortedMeasurements.length > 1
 
-      const getMeasurementData = (field, label, icon) => {
+      const getMeasurementData = (field, label) => {
         const initialVal = first[field] || 0
         const currentVal = last[field] || 0
         const diff = initialVal - currentVal
@@ -420,127 +420,221 @@ Apresente-o ao seu médico para acompanhamento do tratamento.
 
         return {
           label,
-          icon,
           initial: initialVal,
           current: currentVal,
           diff,
-          percentage
+          percentage,
+          hasData: true
         }
       }
 
       const measurements = {
-        pescoco: getMeasurementData('pescoco', 'Pescoço', '📍'),
-        braco: getMeasurementData('braco', 'Braço', '💪'),
-        cintura: getMeasurementData('cintura', 'Cintura', '📏'),
-        quadril: getMeasurementData('quadril', 'Quadril', '📐'),
-        coxa: getMeasurementData('coxa', 'Coxa', '🦵')
+        pescoco: getMeasurementData('pescoco', 'Pescoço'),
+        braco: getMeasurementData('braco', 'Braço'),
+        cintura: getMeasurementData('cintura', 'Cintura'),
+        quadril: getMeasurementData('quadril', 'Quadril'),
+        coxa: getMeasurementData('coxa', 'Coxa')
       }
 
-      const renderBadge = (data, top, left) => {
+      // Função para determinar cor baseada no progresso
+      const getProgressColor = (diff) => {
+        if (diff > 0) return { bg: '#d1fae5', text: '#065f46', bar: '#10b981' } // Verde - perdeu cm
+        if (diff < 0) return { bg: '#fee2e2', text: '#991b1b', bar: '#ef4444' } // Vermelho - ganhou cm
+        return { bg: '#e0e7ff', text: '#3730a3', bar: '#6366f1' } // Azul - sem mudança
+      }
+
+      // Renderizar barra de progresso horizontal (estilo InBody)
+      const renderProgressBar = (data) => {
         if (!data) return ''
 
+        const colors = getProgressColor(data.diff)
+        const maxVal = Math.max(data.initial, data.current) * 1.2 // 20% de margem
+        const initialPercent = (data.initial / maxVal) * 100
+        const currentPercent = (data.current / maxVal) * 100
+
         return `
-          <div style="position: absolute; top: ${top}px; left: ${left}px; background: white; border: 2px solid #667eea; border-radius: 8px; padding: 8px 10px; min-width: 120px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <div style="font-size: 10px; font-weight: 700; color: #667eea; margin-bottom: 4px; text-transform: uppercase;">${data.icon} ${data.label}</div>
+          <div style="margin-bottom: 16px; padding: 12px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid ${colors.bar};">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <div style="font-weight: 700; font-size: 12px; color: #2d3748;">${data.label}</div>
+              <div style="font-size: 11px; color: #64748b;">
+                ${hasMultiple ? `${data.initial.toFixed(1)} → ${data.current.toFixed(1)} cm` : `${data.current.toFixed(1)} cm`}
+              </div>
+            </div>
+
             ${hasMultiple ? `
-              <div style="font-size: 10px; color: #64748b; margin-bottom: 2px;">
-                <span style="font-size: 9px;">Inicial:</span>
-                <span style="font-weight: 600; color: #2d3748; margin-left: 4px;">${data.initial.toFixed(1)} cm</span>
+              <div style="position: relative; height: 24px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin-bottom: 6px;">
+                <div style="position: absolute; top: 0; left: 0; height: 100%; background: ${colors.bar}; width: ${currentPercent}%; opacity: 0.9; border-radius: 4px;"></div>
+                <div style="position: absolute; top: 0; left: 0; height: 100%; border: 2px dashed #94a3b8; width: ${initialPercent}%; background: transparent; border-radius: 4px;"></div>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px; font-weight: 700; color: #1a202c; text-shadow: 0 0 3px white;">${data.current.toFixed(1)} cm</div>
               </div>
-              <div style="font-size: 10px; color: #64748b; margin-bottom: 2px;">
-                <span style="font-size: 9px;">Atual:</span>
-                <span style="font-weight: 600; color: #667eea; margin-left: 4px;">${data.current.toFixed(1)} cm</span>
-              </div>
+
               ${data.diff !== 0 ? `
-                <div style="font-size: 10px; font-weight: 700; margin-top: 4px; padding: 3px 6px; border-radius: 4px; background: ${data.diff > 0 ? '#d1fae5' : '#fee2e2'}; color: ${data.diff > 0 ? '#065f46' : '#991b1b'};">
-                  ${data.diff > 0 ? '▼' : '▲'} ${Math.abs(data.diff).toFixed(1)} cm (${data.percentage}%)
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div style="font-size: 10px; color: #64748b;">
+                    <span style="padding: 2px 6px; background: ${colors.bg}; color: ${colors.text}; border-radius: 4px; font-weight: 600;">
+                      ${data.diff > 0 ? '▼' : '▲'} ${Math.abs(data.diff).toFixed(1)} cm
+                    </span>
+                  </div>
+                  <div style="font-size: 10px; font-weight: 600; color: ${colors.text};">
+                    ${data.diff > 0 ? 'Reduziu' : 'Aumentou'} ${Math.abs(parseFloat(data.percentage))}%
+                  </div>
                 </div>
-              ` : ''}
+              ` : `
+                <div style="font-size: 10px; color: #64748b; text-align: center;">Sem alteração</div>
+              `}
             ` : `
-              <div style="font-size: 11px; font-weight: 600; color: #667eea;">${data.current.toFixed(1)} cm</div>
+              <div style="position: relative; height: 20px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; height: 100%; background: ${colors.bar}; width: ${currentPercent}%; border-radius: 4px;"></div>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px; font-weight: 700; color: #1a202c; text-shadow: 0 0 3px white;">${data.current.toFixed(1)} cm</div>
+              </div>
             `}
           </div>
         `
       }
 
+      // SVG do corpo (frontal e lateral)
+      const bodyVisualization = `
+        <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 20px; padding: 20px; background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); border-radius: 12px;">
+          <!-- Visão Frontal -->
+          <div style="text-align: center;">
+            <div style="font-size: 11px; font-weight: 600; color: #64748b; margin-bottom: 8px;">VISÃO FRONTAL</div>
+            <svg width="120" height="280" viewBox="0 0 120 280" xmlns="http://www.w3.org/2000/svg">
+              <!-- Cabeça -->
+              <circle cx="60" cy="25" r="18" fill="#ffd6a5" stroke="#333" stroke-width="1.5"/>
+              <!-- Pescoço -->
+              <rect x="54" y="40" width="12" height="15" fill="#ffd6a5" stroke="#333" stroke-width="1.5"/>
+              <!-- Tronco -->
+              <path d="M 35 55 Q 30 100, 30 130 L 30 160 Q 30 170, 35 175 L 85 175 Q 90 170, 90 160 L 90 130 Q 90 100, 85 55 Z" fill="#a0c4ff" stroke="#333" stroke-width="1.5"/>
+              <!-- Braços -->
+              <ellipse cx="25" cy="90" rx="8" ry="35" fill="#ffd6a5" stroke="#333" stroke-width="1.5"/>
+              <ellipse cx="95" cy="90" rx="8" ry="35" fill="#ffd6a5" stroke="#333" stroke-width="1.5"/>
+              <!-- Pernas -->
+              <rect x="40" y="175" width="14" height="95" rx="7" fill="#a0c4ff" stroke="#333" stroke-width="1.5"/>
+              <rect x="66" y="175" width="14" height="95" rx="7" fill="#a0c4ff" stroke="#333" stroke-width="1.5"/>
+              <!-- Pés -->
+              <ellipse cx="47" cy="270" rx="8" ry="5" fill="#333"/>
+              <ellipse cx="73" cy="270" rx="8" ry="5" fill="#333"/>
+              <!-- Linhas de medida -->
+              <line x1="30" y1="50" x2="90" y2="50" stroke="#667eea" stroke-width="1.5" stroke-dasharray="2,2"/>
+              <line x1="30" y1="135" x2="90" y2="135" stroke="#667eea" stroke-width="2" stroke-dasharray="2,2"/>
+              <line x1="28" y1="175" x2="92" y2="175" stroke="#667eea" stroke-width="1.5" stroke-dasharray="2,2"/>
+              <line x1="40" y1="210" x2="80" y2="210" stroke="#667eea" stroke-width="1.5" stroke-dasharray="2,2"/>
+            </svg>
+          </div>
+
+          <!-- Visão Lateral -->
+          <div style="text-align: center;">
+            <div style="font-size: 11px; font-weight: 600; color: #64748b; margin-bottom: 8px;">VISÃO LATERAL</div>
+            <svg width="80" height="280" viewBox="0 0 80 280" xmlns="http://www.w3.org/2000/svg">
+              <!-- Cabeça (lateral) -->
+              <circle cx="40" cy="25" r="18" fill="#ffd6a5" stroke="#333" stroke-width="1.5"/>
+              <!-- Pescoço -->
+              <path d="M 35 40 Q 33 47, 36 55 L 44 55 Q 47 47, 45 40 Z" fill="#ffd6a5" stroke="#333" stroke-width="1.5"/>
+              <!-- Tronco (lateral) -->
+              <path d="M 20 55 Q 15 90, 18 130 Q 20 160, 25 175 L 55 175 Q 60 160, 58 130 Q 55 90, 50 55 Z" fill="#a0c4ff" stroke="#333" stroke-width="1.5"/>
+              <!-- Perna (lateral) -->
+              <path d="M 30 175 L 28 270 L 42 270 L 45 175 Z" fill="#a0c4ff" stroke="#333" stroke-width="1.5"/>
+              <!-- Pé -->
+              <ellipse cx="35" cy="272" rx="12" ry="5" fill="#333"/>
+              <!-- Curvas -->
+              <path d="M 36 55 Q 32 90, 35 130" stroke="#667eea" stroke-width="1.5" stroke-dasharray="2,2" fill="none"/>
+              <path d="M 44 55 Q 48 90, 45 130" stroke="#667eea" stroke-width="1.5" stroke-dasharray="2,2" fill="none"/>
+            </svg>
+          </div>
+        </div>
+      `
+
       return `
-        <div style="page-break-inside: avoid; margin-bottom: 20px;">
-          <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08);">
-            <div style="text-align: center; margin-bottom: 15px;">
-              <div style="font-size: 16px; font-weight: 700; color: #2d3748; margin-bottom: 5px;">📊 Avatar de Medidas Corporais</div>
+        <div style="page-break-inside: avoid; margin-bottom: 25px;">
+          <div style="background: white; border: 2px solid #e2e8f0; border-radius: 16px; padding: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.08);">
+            <!-- Header -->
+            <div style="text-align: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 3px solid #667eea;">
+              <div style="font-size: 18px; font-weight: 800; color: #1a202c; margin-bottom: 4px; letter-spacing: -0.5px;">
+                📊 ANÁLISE SEGMENTADA DE COMPOSIÇÃO CORPORAL
+              </div>
               ${hasMultiple ? `
-                <div style="font-size: 12px; color: #64748b;">Comparação: Primeira x Última Medição</div>
+                <div style="font-size: 11px; color: #64748b; font-weight: 600;">
+                  COMPARAÇÃO: ${format(new Date(first.data), 'dd/MM/yyyy')} → ${format(new Date(last.data), 'dd/MM/yyyy')}
+                  <span style="margin-left: 8px; padding: 2px 8px; background: #667eea20; color: #667eea; border-radius: 4px; font-size: 10px;">
+                    ${sortedMeasurements.length} medições registradas
+                  </span>
+                </div>
               ` : `
-                <div style="font-size: 12px; color: #64748b;">Medições Registradas</div>
+                <div style="font-size: 11px; color: #64748b; font-weight: 600;">
+                  MEDIÇÃO REALIZADA EM: ${format(new Date(last.data), 'dd/MM/yyyy')}
+                </div>
               `}
             </div>
 
-            <div style="position: relative; width: 100%; max-width: 600px; margin: 0 auto; min-height: 400px;">
-              <!-- Avatar SVG -->
-              <div style="text-align: center;">
-                <svg width="200" height="400" viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg" style="display: inline-block;">
-                  <!-- Cabeça -->
-                  <circle cx="100" cy="40" r="25" fill="#ffd6a5" stroke="#333" stroke-width="2"/>
-                  <!-- Pescoço -->
-                  <rect x="92" y="60" width="16" height="20" fill="#ffd6a5" stroke="#333" stroke-width="2"/>
-                  <line x1="92" y1="70" x2="80" y2="70" stroke="#667eea" stroke-width="2" stroke-dasharray="3,3"/>
-                  <line x1="108" y1="70" x2="120" y2="70" stroke="#667eea" stroke-width="2" stroke-dasharray="3,3"/>
-                  <!-- Corpo/Tronco -->
-                  <ellipse cx="100" cy="130" rx="35" ry="55" fill="#a0c4ff" stroke="#333" stroke-width="2"/>
-                  <!-- Linha de cintura -->
-                  <line x1="65" y1="150" x2="50" y2="150" stroke="#667eea" stroke-width="2" stroke-dasharray="3,3"/>
-                  <line x1="135" y1="150" x2="150" y2="150" stroke="#667eea" stroke-width="2" stroke-dasharray="3,3"/>
-                  <!-- Braço Esquerdo -->
-                  <ellipse cx="70" cy="110" rx="12" ry="40" fill="#ffd6a5" stroke="#333" stroke-width="2" transform="rotate(-10 70 110)"/>
-                  <line x1="70" y1="100" x2="55" y2="100" stroke="#667eea" stroke-width="2" stroke-dasharray="3,3"/>
-                  <!-- Braço Direito -->
-                  <ellipse cx="130" cy="110" rx="12" ry="40" fill="#ffd6a5" stroke="#333" stroke-width="2" transform="rotate(10 130 110)"/>
-                  <line x1="130" y1="100" x2="145" y2="100" stroke="#667eea" stroke-width="2" stroke-dasharray="3,3"/>
-                  <!-- Quadril -->
-                  <ellipse cx="100" cy="200" rx="38" ry="25" fill="#a0c4ff" stroke="#333" stroke-width="2"/>
-                  <line x1="62" y1="200" x2="45" y2="200" stroke="#667eea" stroke-width="2" stroke-dasharray="3,3"/>
-                  <line x1="138" y1="200" x2="155" y2="200" stroke="#667eea" stroke-width="2" stroke-dasharray="3,3"/>
-                  <!-- Perna Esquerda -->
-                  <ellipse cx="85" cy="290" rx="18" ry="80" fill="#a0c4ff" stroke="#333" stroke-width="2"/>
-                  <line x1="85" y1="250" x2="65" y2="250" stroke="#667eea" stroke-width="2" stroke-dasharray="3,3"/>
-                  <!-- Perna Direita -->
-                  <ellipse cx="115" cy="290" rx="18" ry="80" fill="#a0c4ff" stroke="#333" stroke-width="2"/>
-                  <line x1="115" y1="250" x2="135" y2="250" stroke="#667eea" stroke-width="2" stroke-dasharray="3,3"/>
-                  <!-- Pés -->
-                  <ellipse cx="85" cy="370" rx="12" ry="8" fill="#333"/>
-                  <ellipse cx="115" cy="370" rx="12" ry="8" fill="#333"/>
-                </svg>
+            <!-- Body Visualization -->
+            ${bodyVisualization}
+
+            <!-- Measurements Analysis -->
+            <div style="margin-bottom: 16px;">
+              <div style="background: linear-gradient(90deg, #667eea, #764ba2); color: white; padding: 8px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; margin-bottom: 12px; text-align: center;">
+                ${hasMultiple ? 'ANÁLISE COMPARATIVA DE MEDIDAS' : 'MEDIDAS CORPORAIS'}
               </div>
 
-              <!-- Badges de medidas -->
-              <div style="position: relative; margin-top: -400px;">
-                ${renderBadge(measurements.pescoco, 50, 420)}
-                ${renderBadge(measurements.braco, 80, 10)}
-                ${renderBadge(measurements.cintura, 130, 420)}
-                ${renderBadge(measurements.quadril, 180, 420)}
-                ${renderBadge(measurements.coxa, 230, 10)}
-              </div>
+              ${measurements.pescoco ? renderProgressBar(measurements.pescoco) : ''}
+              ${measurements.braco ? renderProgressBar(measurements.braco) : ''}
+              ${measurements.cintura ? renderProgressBar(measurements.cintura) : ''}
+              ${measurements.quadril ? renderProgressBar(measurements.quadril) : ''}
+              ${measurements.coxa ? renderProgressBar(measurements.coxa) : ''}
             </div>
 
+            <!-- Summary -->
             ${hasMultiple ? `
-              <div style="margin-top: 420px; padding-top: 15px; border-top: 2px solid #f0f0f0; text-align: center;">
-                <div style="display: inline-flex; gap: 20px; justify-content: center; font-size: 11px; color: #64748b;">
-                  <div style="display: flex; align-items: center; gap: 6px;">
-                    <span style="font-size: 14px; font-weight: bold; color: #10b981;">▼</span>
-                    <span>Redução (Progresso Positivo)</span>
-                  </div>
-                  <div style="display: flex; align-items: center; gap: 6px;">
-                    <span style="font-size: 14px; font-weight: bold; color: #ef4444;">▲</span>
-                    <span>Aumento</span>
-                  </div>
+              <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 16px; border-radius: 10px; border: 2px solid #0ea5e9;">
+                <div style="font-size: 12px; font-weight: 700; color: #0369a1; margin-bottom: 10px; text-align: center;">
+                  📈 RESUMO DO PROGRESSO
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px;">
+                  ${Object.values(measurements).filter(m => m && m.diff !== 0).map(m => `
+                    <div style="background: white; padding: 10px; border-radius: 6px; text-align: center; border: 1px solid ${getProgressColor(m.diff).bar};">
+                      <div style="font-size: 10px; color: #64748b; margin-bottom: 4px;">${m.label}</div>
+                      <div style="font-size: 16px; font-weight: 800; color: ${getProgressColor(m.diff).bar}; margin-bottom: 2px;">
+                        ${m.diff > 0 ? '-' : '+'}${Math.abs(m.diff).toFixed(1)} cm
+                      </div>
+                      <div style="font-size: 9px; color: ${getProgressColor(m.diff).text}; font-weight: 600;">
+                        ${Math.abs(parseFloat(m.percentage))}% ${m.diff > 0 ? 'redução' : 'aumento'}
+                      </div>
+                    </div>
+                  `).join('')}
                 </div>
               </div>
             ` : ''}
+
+            <!-- Legend -->
+            <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #e2e8f0;">
+              <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; font-size: 10px; color: #64748b;">
+                ${hasMultiple ? `
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <div style="width: 12px; height: 12px; background: #10b981; border-radius: 2px;"></div>
+                    <span>Medida Atual</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <div style="width: 12px; height: 12px; border: 2px dashed #94a3b8; border-radius: 2px; background: transparent;"></div>
+                    <span>Medida Inicial</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="font-weight: 700; color: #10b981;">▼</span>
+                    <span>Redução (Bom)</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="font-weight: 700; color: #ef4444;">▲</span>
+                    <span>Aumento</span>
+                  </div>
+                ` : `
+                  <div style="text-align: center; font-style: italic;">
+                    Registre novas medições para acompanhar seu progresso ao longo do tempo
+                  </div>
+                `}
+              </div>
+            </div>
           </div>
         </div>
       `
     }
-
     // Calculate measurements changes
     const getMeasurementsChanges = () => {
       if (sortedMeasurements.length < 2) return ''
