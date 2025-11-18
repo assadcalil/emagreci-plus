@@ -402,38 +402,188 @@ Apresente-o ao seu médico para acompanhamento do tratamento.
       `
     }
 
-    // Calculate measurements changes
-    const getMeasurementsChanges = () => {
+    // Generate body avatar with measurements
+    const generateBodyAvatar = () => {
       if (sortedMeasurements.length < 2) return ''
 
       const first = sortedMeasurements[0]
       const last = sortedMeasurements[sortedMeasurements.length - 1]
 
-      const changes = []
-      if (first.cintura && last.cintura) {
-        const diff = last.cintura - first.cintura
-        changes.push(`Cintura: ${diff <= 0 ? '' : '+'}${diff.toFixed(1)} cm`)
-      }
-      if (first.quadril && last.quadril) {
-        const diff = last.quadril - first.quadril
-        changes.push(`Quadril: ${diff <= 0 ? '' : '+'}${diff.toFixed(1)} cm`)
-      }
-      if (first.coxa && last.coxa) {
-        const diff = last.coxa - first.coxa
-        changes.push(`Coxa: ${diff <= 0 ? '' : '+'}${diff.toFixed(1)} cm`)
-      }
-      if (first.braco && last.braco) {
-        const diff = last.braco - first.braco
-        changes.push(`Braço: ${diff <= 0 ? '' : '+'}${diff.toFixed(1)} cm`)
+      // Calculate differences
+      const measurements = {
+        cintura: {
+          inicial: first.cintura || 0,
+          atual: last.cintura || 0,
+          diff: (last.cintura || 0) - (first.cintura || 0)
+        },
+        quadril: {
+          inicial: first.quadril || 0,
+          atual: last.quadril || 0,
+          diff: (last.quadril || 0) - (first.quadril || 0)
+        },
+        braco: {
+          inicial: first.braco || 0,
+          atual: last.braco || 0,
+          diff: (last.braco || 0) - (first.braco || 0)
+        },
+        coxa: {
+          inicial: first.coxa || 0,
+          atual: last.coxa || 0,
+          diff: (last.coxa || 0) - (first.coxa || 0)
+        }
       }
 
-      if (changes.length === 0) return ''
+      const hasAnyMeasurement = Object.values(measurements).some(m => m.inicial > 0 && m.atual > 0)
+      if (!hasAnyMeasurement) return ''
 
       return `
-        <div style="background: #fefcbf; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #f6e05e;">
-          <div style="font-size: 12px; color: #744210; font-weight: 600; margin-bottom: 8px;">📏 Variação Total das Medidas</div>
-          <div style="display: flex; flex-wrap: wrap; gap: 15px;">
-            ${changes.map(c => `<span style="font-size: 11px; color: #744210;">${c}</span>`).join('')}
+        <div style="background: linear-gradient(135deg, #f0fff4, #c6f6d5); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 2px solid #9ae6b4;">
+          <h4 style="text-align: center; color: #22543d; margin-bottom: 20px; font-size: 16px;">👤 Evolução das Medidas Corporais</h4>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+            <!-- Before Avatar -->
+            <div style="text-align: center;">
+              <div style="background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h5 style="color: #e53e3e; margin-bottom: 15px; font-size: 13px;">📅 INÍCIO</h5>
+                <svg width="180" height="280" viewBox="0 0 180 280" style="margin: 0 auto;">
+                  <!-- Head -->
+                  <circle cx="90" cy="30" r="20" fill="#fed7d7" stroke="#e53e3e" stroke-width="2"/>
+                  <!-- Body -->
+                  <rect x="70" y="55" width="40" height="80" rx="10" fill="#fed7d7" stroke="#e53e3e" stroke-width="2"/>
+                  <!-- Arms -->
+                  <rect x="40" y="60" width="25" height="50" rx="8" fill="#fed7d7" stroke="#e53e3e" stroke-width="2"/>
+                  <rect x="115" y="60" width="25" height="50" rx="8" fill="#fed7d7" stroke="#e53e3e" stroke-width="2"/>
+                  <!-- Legs -->
+                  <rect x="75" y="140" width="15" height="90" rx="7" fill="#fed7d7" stroke="#e53e3e" stroke-width="2"/>
+                  <rect x="90" y="140" width="15" height="90" rx="7" fill="#fed7d7" stroke="#e53e3e" stroke-width="2"/>
+
+                  <!-- Measurement labels - Before -->
+                  ${measurements.braco.inicial > 0 ? `
+                    <text x="25" y="85" font-size="10" fill="#c53030" font-weight="600" text-anchor="middle">
+                      ${measurements.braco.inicial.toFixed(1)}
+                    </text>
+                  ` : ''}
+
+                  ${measurements.cintura.inicial > 0 ? `
+                    <text x="90" y="100" font-size="10" fill="#c53030" font-weight="600" text-anchor="middle">
+                      ${measurements.cintura.inicial.toFixed(1)}
+                    </text>
+                  ` : ''}
+
+                  ${measurements.quadril.inicial > 0 ? `
+                    <text x="90" y="145" font-size="10" fill="#c53030" font-weight="600" text-anchor="middle">
+                      ${measurements.quadril.inicial.toFixed(1)}
+                    </text>
+                  ` : ''}
+
+                  ${measurements.coxa.inicial > 0 ? `
+                    <text x="82" y="180" font-size="10" fill="#c53030" font-weight="600" text-anchor="middle">
+                      ${measurements.coxa.inicial.toFixed(1)}
+                    </text>
+                  ` : ''}
+                </svg>
+
+                <div style="margin-top: 15px; padding: 10px; background: #fff5f5; border-radius: 8px;">
+                  ${measurements.braco.inicial > 0 ? `<div style="font-size: 10px; color: #742a2a; margin: 3px 0;"><strong>Braço:</strong> ${measurements.braco.inicial.toFixed(1)} cm</div>` : ''}
+                  ${measurements.cintura.inicial > 0 ? `<div style="font-size: 10px; color: #742a2a; margin: 3px 0;"><strong>Cintura:</strong> ${measurements.cintura.inicial.toFixed(1)} cm</div>` : ''}
+                  ${measurements.quadril.inicial > 0 ? `<div style="font-size: 10px; color: #742a2a; margin: 3px 0;"><strong>Quadril:</strong> ${measurements.quadril.inicial.toFixed(1)} cm</div>` : ''}
+                  ${measurements.coxa.inicial > 0 ? `<div style="font-size: 10px; color: #742a2a; margin: 3px 0;"><strong>Coxa:</strong> ${measurements.coxa.inicial.toFixed(1)} cm</div>` : ''}
+                </div>
+              </div>
+            </div>
+
+            <!-- After Avatar -->
+            <div style="text-align: center;">
+              <div style="background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h5 style="color: #38a169; margin-bottom: 15px; font-size: 13px;">✅ ATUAL</h5>
+                <svg width="180" height="280" viewBox="0 0 180 280" style="margin: 0 auto;">
+                  <!-- Head -->
+                  <circle cx="90" cy="30" r="20" fill="#c6f6d5" stroke="#38a169" stroke-width="2"/>
+                  <!-- Body (slightly smaller) -->
+                  <rect x="72" y="55" width="36" height="78" rx="10" fill="#c6f6d5" stroke="#38a169" stroke-width="2"/>
+                  <!-- Arms (slightly smaller) -->
+                  <rect x="42" y="60" width="23" height="48" rx="8" fill="#c6f6d5" stroke="#38a169" stroke-width="2"/>
+                  <rect x="115" y="60" width="23" height="48" rx="8" fill="#c6f6d5" stroke="#38a169" stroke-width="2"/>
+                  <!-- Legs (slightly smaller) -->
+                  <rect x="76" y="138" width="14" height="88" rx="7" fill="#c6f6d5" stroke="#38a169" stroke-width="2"/>
+                  <rect x="90" y="138" width="14" height="88" rx="7" fill="#c6f6d5" stroke="#38a169" stroke-width="2"/>
+
+                  <!-- Measurement labels - After -->
+                  ${measurements.braco.atual > 0 ? `
+                    <text x="25" y="85" font-size="10" fill="#22543d" font-weight="600" text-anchor="middle">
+                      ${measurements.braco.atual.toFixed(1)}
+                    </text>
+                  ` : ''}
+
+                  ${measurements.cintura.atual > 0 ? `
+                    <text x="90" y="100" font-size="10" fill="#22543d" font-weight="600" text-anchor="middle">
+                      ${measurements.cintura.atual.toFixed(1)}
+                    </text>
+                  ` : ''}
+
+                  ${measurements.quadril.atual > 0 ? `
+                    <text x="90" y="143" font-size="10" fill="#22543d" font-weight="600" text-anchor="middle">
+                      ${measurements.quadril.atual.toFixed(1)}
+                    </text>
+                  ` : ''}
+
+                  ${measurements.coxa.atual > 0 ? `
+                    <text x="82" y="178" font-size="10" fill="#22543d" font-weight="600" text-anchor="middle">
+                      ${measurements.coxa.atual.toFixed(1)}
+                    </text>
+                  ` : ''}
+                </svg>
+
+                <div style="margin-top: 15px; padding: 10px; background: #f0fff4; border-radius: 8px;">
+                  ${measurements.braco.atual > 0 ? `<div style="font-size: 10px; color: #22543d; margin: 3px 0;"><strong>Braço:</strong> ${measurements.braco.atual.toFixed(1)} cm</div>` : ''}
+                  ${measurements.cintura.atual > 0 ? `<div style="font-size: 10px; color: #22543d; margin: 3px 0;"><strong>Cintura:</strong> ${measurements.cintura.atual.toFixed(1)} cm</div>` : ''}
+                  ${measurements.quadril.atual > 0 ? `<div style="font-size: 10px; color: #22543d; margin: 3px 0;"><strong>Quadril:</strong> ${measurements.quadril.atual.toFixed(1)} cm</div>` : ''}
+                  ${measurements.coxa.atual > 0 ? `<div style="font-size: 10px; color: #22543d; margin: 3px 0;"><strong>Coxa:</strong> ${measurements.coxa.atual.toFixed(1)} cm</div>` : ''}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Differences Summary -->
+          <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <h5 style="text-align: center; color: #2d3748; margin-bottom: 12px; font-size: 14px;">📊 Redução Total</h5>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px;">
+              ${measurements.braco.diff !== 0 && measurements.braco.inicial > 0 ? `
+                <div style="text-align: center; padding: 10px; background: ${measurements.braco.diff < 0 ? '#f0fff4' : '#fff5f5'}; border-radius: 8px; border: 2px solid ${measurements.braco.diff < 0 ? '#9ae6b4' : '#fc8181'};">
+                  <div style="font-size: 11px; color: #718096; margin-bottom: 4px;">Braço</div>
+                  <div style="font-size: 16px; font-weight: 700; color: ${measurements.braco.diff < 0 ? '#38a169' : '#e53e3e'};">
+                    ${measurements.braco.diff > 0 ? '+' : ''}${measurements.braco.diff.toFixed(1)} cm
+                  </div>
+                </div>
+              ` : ''}
+
+              ${measurements.cintura.diff !== 0 && measurements.cintura.inicial > 0 ? `
+                <div style="text-align: center; padding: 10px; background: ${measurements.cintura.diff < 0 ? '#f0fff4' : '#fff5f5'}; border-radius: 8px; border: 2px solid ${measurements.cintura.diff < 0 ? '#9ae6b4' : '#fc8181'};">
+                  <div style="font-size: 11px; color: #718096; margin-bottom: 4px;">Cintura</div>
+                  <div style="font-size: 16px; font-weight: 700; color: ${measurements.cintura.diff < 0 ? '#38a169' : '#e53e3e'};">
+                    ${measurements.cintura.diff > 0 ? '+' : ''}${measurements.cintura.diff.toFixed(1)} cm
+                  </div>
+                </div>
+              ` : ''}
+
+              ${measurements.quadril.diff !== 0 && measurements.quadril.inicial > 0 ? `
+                <div style="text-align: center; padding: 10px; background: ${measurements.quadril.diff < 0 ? '#f0fff4' : '#fff5f5'}; border-radius: 8px; border: 2px solid ${measurements.quadril.diff < 0 ? '#9ae6b4' : '#fc8181'};">
+                  <div style="font-size: 11px; color: #718096; margin-bottom: 4px;">Quadril</div>
+                  <div style="font-size: 16px; font-weight: 700; color: ${measurements.quadril.diff < 0 ? '#38a169' : '#e53e3e'};">
+                    ${measurements.quadril.diff > 0 ? '+' : ''}${measurements.quadril.diff.toFixed(1)} cm
+                  </div>
+                </div>
+              ` : ''}
+
+              ${measurements.coxa.diff !== 0 && measurements.coxa.inicial > 0 ? `
+                <div style="text-align: center; padding: 10px; background: ${measurements.coxa.diff < 0 ? '#f0fff4' : '#fff5f5'}; border-radius: 8px; border: 2px solid ${measurements.coxa.diff < 0 ? '#9ae6b4' : '#fc8181'};">
+                  <div style="font-size: 11px; color: #718096; margin-bottom: 4px;">Coxa</div>
+                  <div style="font-size: 16px; font-weight: 700; color: ${measurements.coxa.diff < 0 ? '#38a169' : '#e53e3e'};">
+                    ${measurements.coxa.diff > 0 ? '+' : ''}${measurements.coxa.diff.toFixed(1)} cm
+                  </div>
+                </div>
+              ` : ''}
+            </div>
           </div>
         </div>
       `
@@ -602,7 +752,7 @@ Apresente-o ao seu médico para acompanhamento do tratamento.
         ` : ''}
 
         ${sortedMeasurements.length > 0 ? `
-        ${getMeasurementsChanges()}
+        ${generateBodyAvatar()}
         ${generateMeasurementsChart()}
         ` : ''}
 
