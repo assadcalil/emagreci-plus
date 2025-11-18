@@ -16,6 +16,9 @@ import NutritionTracker from './components/NutritionTracker'
 import InjectionMap from './components/InjectionMap'
 import ProgressPhotos from './components/ProgressPhotos'
 import PhotoComparison from './components/PhotoComparison'
+import MeasurementGoals from './components/MeasurementGoals'
+import AdvancedMeasurementChart from './components/AdvancedMeasurementChart'
+import MeasurementReminder from './components/MeasurementReminder'
 import LandingPage from './components/LandingPage'
 import AuthScreen from './components/AuthScreen'
 import CommunityChat from './components/CommunityChat'
@@ -58,6 +61,9 @@ function App() {
   const [showNutritionModal, setShowNutritionModal] = useState(false)
   const [showPhotosModal, setShowPhotosModal] = useState(false)
   const [showPhotoComparisonModal, setShowPhotoComparisonModal] = useState(false)
+  const [showMeasurementGoalsModal, setShowMeasurementGoalsModal] = useState(false)
+  const [showAdvancedChartModal, setShowAdvancedChartModal] = useState(false)
+  const [showMeasurementReminderModal, setShowMeasurementReminderModal] = useState(false)
 
   // View state
   const [activeView, setActiveView] = useState('dashboard')
@@ -574,6 +580,27 @@ function App() {
             <span>🔄</span>
             <span>Comparação</span>
           </button>
+          <button
+            className={`btn-action btn-goals ${!checkAccess('measurements') ? 'locked' : ''}`}
+            onClick={() => checkAccess('measurements') ? setShowMeasurementGoalsModal(true) : toast.warning('Faça upgrade para o plano Pro')}
+          >
+            <span>🎯</span>
+            <span>Metas</span>
+          </button>
+          <button
+            className={`btn-action btn-chart ${!checkAccess('measurements') ? 'locked' : ''}`}
+            onClick={() => checkAccess('measurements') ? setShowAdvancedChartModal(true) : toast.warning('Faça upgrade para o plano Pro')}
+          >
+            <span>📈</span>
+            <span>Gráficos</span>
+          </button>
+          <button
+            className={`btn-action btn-reminder ${!checkAccess('measurements') ? 'locked' : ''}`}
+            onClick={() => checkAccess('measurements') ? setShowMeasurementReminderModal(true) : toast.warning('Faça upgrade para o plano Pro')}
+          >
+            <span>🔔</span>
+            <span>Lembretes</span>
+          </button>
         </div>
 
         {/* Navigation Tabs */}
@@ -863,6 +890,18 @@ function App() {
 
       {showPhotoComparisonModal && (
         <PhotoComparison photos={[]} measurements={measurements} onClose={() => setShowPhotoComparisonModal(false)} />
+      )}
+
+      {showMeasurementGoalsModal && (
+        <MeasurementGoals userId={user?.id} measurements={measurements} onClose={() => setShowMeasurementGoalsModal(false)} />
+      )}
+
+      {showAdvancedChartModal && (
+        <AdvancedMeasurementChart measurements={measurements} onClose={() => setShowAdvancedChartModal(false)} />
+      )}
+
+      {showMeasurementReminderModal && (
+        <MeasurementReminder measurements={measurements} onClose={() => setShowMeasurementReminderModal(false)} />
       )}
 
       {showHistoryModal && (

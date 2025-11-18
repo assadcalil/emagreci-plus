@@ -1,0 +1,340 @@
+.modal-measurement-reminder {
+  max-width: 700px !important;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.reminder-intro {
+  text-align: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.reminder-intro p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* Measurement Status */
+.measurement-status {
+  background: var(--background);
+  border-radius: 10px;
+  padding: 1.2rem;
+  margin-bottom: 1.5rem;
+  border: 2px solid var(--border);
+}
+
+.measurement-status.on-track {
+  border-color: var(--success);
+  background: #d4edda;
+}
+
+.measurement-status.overdue {
+  border-color: var(--danger);
+  background: #f8d7da;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0;
+}
+
+.status-item:not(:last-child) {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.status-label {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.status-value {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.no-measurements-warning {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  color: #856404;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Reminder Settings */
+.reminder-setting {
+  margin-bottom: 1.5rem;
+  background: var(--background);
+  padding: 1.2rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.setting-header {
+  margin-bottom: 1rem;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-label input[type="checkbox"] {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.toggle-text {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.setting-label {
+  display: block;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+/* Frequency Options */
+.frequency-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.frequency-btn {
+  padding: 0.9rem 1.2rem;
+  border: 2px solid var(--border);
+  background: var(--background);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.frequency-btn:hover {
+  border-color: var(--primary);
+  background: var(--surface);
+}
+
+.frequency-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+  font-weight: 600;
+}
+
+/* Custom Days Input */
+.custom-days-input {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--surface);
+  border-radius: 8px;
+}
+
+.custom-days-input label {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.custom-days-input input {
+  width: 80px;
+  padding: 0.6rem;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.custom-days-input input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.custom-days-input span {
+  color: var(--text-secondary);
+}
+
+/* Permission Status */
+.permission-status {
+  background: var(--background);
+  padding: 1.2rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+
+.permission-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.permission-label {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.permission-badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.permission-badge.granted {
+  background: #d4edda;
+  color: #155724;
+}
+
+.permission-badge.denied {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.permission-badge.default {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.permission-help {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0.8rem 0 0 0;
+  padding: 0.8rem;
+  background: var(--surface);
+  border-radius: 6px;
+}
+
+.btn-test-notification {
+  width: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.8rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 0.8rem;
+}
+
+.btn-test-notification:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+/* Info Section */
+.reminder-info {
+  background: var(--background);
+  padding: 1.2rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+
+.reminder-info h3 {
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.reminder-info ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: var(--text-secondary);
+}
+
+.reminder-info li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modal-measurement-reminder {
+    max-width: 95% !important;
+  }
+
+  .status-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+
+  .permission-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .toggle-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+  }
+
+  .toggle-text {
+    font-size: 1rem;
+  }
+
+  .frequency-btn {
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .custom-days-input {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .custom-days-input input {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .reminder-setting,
+  .permission-status,
+  .reminder-info {
+    padding: 1rem;
+  }
+
+  .reminder-intro p {
+    font-size: 0.9rem;
+  }
+
+  .setting-label,
+  .reminder-info h3 {
+    font-size: 0.95rem;
+  }
+
+  .frequency-btn {
+    padding: 0.7rem 0.9rem;
+    font-size: 0.9rem;
+  }
+
+  .permission-help,
+  .reminder-info li {
+    font-size: 0.85rem;
+  }
+}

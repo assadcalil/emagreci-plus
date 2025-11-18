@@ -1,0 +1,328 @@
+.modal-advanced-chart {
+  max-width: 1200px !important;
+  max-height: 95vh;
+  overflow-y: auto;
+}
+
+.chart-controls {
+  background: var(--background);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border);
+}
+
+.control-group {
+  margin-bottom: 1.5rem;
+}
+
+.control-group:last-child {
+  margin-bottom: 0;
+}
+
+.control-group > label {
+  display: block;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.8rem;
+  font-size: 0.95rem;
+}
+
+/* Time Range Buttons */
+.time-range-buttons {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.time-range-btn {
+  padding: 0.6rem 1.2rem;
+  border: 2px solid var(--border);
+  background: var(--background);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.time-range-btn:hover {
+  border-color: var(--primary);
+  background: var(--surface);
+}
+
+.time-range-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+}
+
+/* Field Toggles */
+.field-toggles {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.field-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border: 2px solid var(--border);
+  background: var(--background);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.field-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.field-toggle.active {
+  font-weight: 600;
+}
+
+.field-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* View Options */
+.view-options {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.btn-export-data {
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-export-data:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
+}
+
+/* Chart Container */
+.chart-container {
+  background: white;
+  padding: 2rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+
+.empty-chart {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-secondary);
+  background: var(--background);
+  border-radius: 12px;
+  border: 1px dashed var(--border);
+  margin-bottom: 1.5rem;
+}
+
+.empty-chart p {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.empty-chart small {
+  font-size: 0.9rem;
+}
+
+/* Chart Stats */
+.chart-stats {
+  background: var(--background);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+
+.chart-stats h3 {
+  margin-bottom: 1.2rem;
+  color: var(--text-primary);
+  font-size: 1.2rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: all 0.3s;
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.stat-header {
+  padding: 0.8rem 1rem;
+  background: var(--surface);
+  border-left: 4px solid var(--primary);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.stat-values {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background: var(--background);
+  border-radius: 6px;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.stat-value {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.stat-value.positive {
+  color: var(--success);
+}
+
+.stat-value.negative {
+  color: var(--danger);
+}
+
+.stat-value.neutral {
+  color: var(--text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modal-advanced-chart {
+    max-width: 95% !important;
+  }
+
+  .chart-controls {
+    padding: 1rem;
+  }
+
+  .time-range-buttons,
+  .field-toggles {
+    gap: 0.5rem;
+  }
+
+  .time-range-btn,
+  .field-toggle {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .chart-container {
+    padding: 1rem 0.5rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .view-options {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .btn-export-data {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .control-group > label {
+    font-size: 0.9rem;
+  }
+
+  .time-range-btn,
+  .field-toggle {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.7rem;
+  }
+
+  .field-color {
+    width: 10px;
+    height: 10px;
+  }
+
+  .chart-stats {
+    padding: 1rem;
+  }
+
+  .chart-stats h3 {
+    font-size: 1.1rem;
+  }
+
+  .stat-header {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .stat-values {
+    padding: 0.8rem;
+  }
+
+  .stat-item {
+    padding: 0.4rem;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+  }
+
+  .stat-value {
+    font-size: 0.9rem;
+  }
+}
