@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { validateMeasurement } from '../utils/validation'
 import './MeasurementRegistration.css'
 
-function MeasurementRegistration({ onSave, onClose }) {
+function MeasurementRegistration({ onSave, onClose, initialData = null }) {
   const [measurementData, setMeasurementData] = useState({
     data: new Date().toISOString().split('T')[0],
     cintura: '',
@@ -13,6 +13,21 @@ function MeasurementRegistration({ onSave, onClose }) {
     observacoes: ''
   })
   const [errors, setErrors] = useState({})
+
+  // Preencher dados quando estiver editando
+  useEffect(() => {
+    if (initialData) {
+      setMeasurementData({
+        data: initialData.data || new Date().toISOString().split('T')[0],
+        cintura: initialData.cintura || '',
+        quadril: initialData.quadril || '',
+        braco: initialData.braco || '',
+        coxa: initialData.coxa || '',
+        pescoco: initialData.pescoco || '',
+        observacoes: initialData.observacoes || ''
+      })
+    }
+  }, [initialData])
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -65,8 +80,15 @@ function MeasurementRegistration({ onSave, onClose }) {
     if (measurementData.coxa) cleanData.coxa = parseFloat(measurementData.coxa)
     if (measurementData.pescoco) cleanData.pescoco = parseFloat(measurementData.pescoco)
 
-    onSave(cleanData)
+    // Se estiver editando, passar o ID junto
+    if (initialData?.id) {
+      onSave(cleanData, initialData.id)
+    } else {
+      onSave(cleanData)
+    }
   }
+
+  const isEditing = initialData !== null
 
   const renderInput = (field, label, placeholder, icon) => (
     <div className="form-group">
@@ -90,7 +112,7 @@ function MeasurementRegistration({ onSave, onClose }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content modal-large" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>📏 Registrar Medidas</h2>
+          <h2>{isEditing ? '✏️ Editar Medidas' : '📏 Registrar Medidas'}</h2>
           <button className="close-button" onClick={onClose}>✕</button>
         </div>
 
@@ -132,7 +154,7 @@ function MeasurementRegistration({ onSave, onClose }) {
               Cancelar
             </button>
             <button type="submit" className="btn-primary">
-              Salvar Medidas
+              {isEditing ? 'Atualizar Medidas' : 'Salvar Medidas'}
             </button>
           </div>
         </form>

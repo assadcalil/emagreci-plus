@@ -438,6 +438,34 @@ body {
   border-color: var(--border);
 }
 
+.btn-icon-small {
+  background: var(--background);
+  border: 1px solid var(--border);
+  font-size: 0.9rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+}
+
+.btn-icon-small:hover {
+  background: var(--surface);
+  border-color: var(--secondary);
+  transform: scale(1.05);
+}
+
+.btn-icon-small.btn-delete:hover {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: white;
+  filter: brightness(1.1);
+}
+
 /* Action Buttons - Compactos e Uniformes */
 .action-buttons {
   display: grid;
@@ -747,11 +775,23 @@ body {
   border-radius: 8px;
 }
 
+.measurement-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
 .measurement-date {
   font-weight: 600;
-  margin-bottom: 0.5rem;
   color: var(--text-primary);
   font-size: 0.9rem;
+}
+
+.measurement-actions {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
 }
 
 .measurement-values {

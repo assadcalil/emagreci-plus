@@ -49,6 +49,7 @@ function App() {
   const [showDoseModal, setShowDoseModal] = useState(false)
   const [showWeightModal, setShowWeightModal] = useState(false)
   const [showMeasurementModal, setShowMeasurementModal] = useState(false)
+  const [editingMeasurement, setEditingMeasurement] = useState(null)
   const [showSideEffectModal, setShowSideEffectModal] = useState(false)
   const [showHistoryModal, setShowHistoryModal] = useState(false)
   const [showExportModal, setShowExportModal] = useState(false)
@@ -75,7 +76,7 @@ function App() {
   const { profile, updateProfile, loading: profileLoading } = useSupabaseProfile(user?.id)
   const { doses, addDose } = useSupabaseDoses(user?.id)
   const { weights, addWeight } = useSupabaseWeights(user?.id)
-  const { measurements, addMeasurement } = useSupabaseMeasurements(user?.id)
+  const { measurements, addMeasurement, updateMeasurement, deleteMeasurement } = useSupabaseMeasurements(user?.id)
   const { sideEffects, addSideEffect } = useSupabaseSideEffects(user?.id)
   const { goals, addGoal, toggleGoal, deleteGoal } = useSupabaseGoals(user?.id)
   const {
@@ -363,17 +364,47 @@ function App() {
     }
   }
 
-  const handleSaveMeasurement = async (newMeasurement) => {
+  const handleSaveMeasurement = async (newMeasurement, measurementId) => {
     if (!checkAccess('measurements')) {
       toast.warning('Atualize seu plano para registrar medidas')
       return
     }
-    const result = await addMeasurement(newMeasurement)
-    if (result) {
-      setShowMeasurementModal(false)
-      toast.success('Medidas registradas com sucesso!')
+
+    // Se tem ID, é edição
+    if (measurementId) {
+      const result = await updateMeasurement(measurementId, newMeasurement)
+      if (result) {
+        setShowMeasurementModal(false)
+        setEditingMeasurement(null)
+        toast.success('Medidas atualizadas com sucesso!')
+      } else {
+        toast.error('Erro ao atualizar medidas')
+      }
     } else {
-      toast.error('Erro ao registrar medidas')
+      // Senão, é novo registro
+      const result = await addMeasurement(newMeasurement)
+      if (result) {
+        setShowMeasurementModal(false)
+        toast.success('Medidas registradas com sucesso!')
+      } else {
+        toast.error('Erro ao registrar medidas')
+      }
+    }
+  }
+
+  const handleEditMeasurement = (measurement) => {
+    setEditingMeasurement(measurement)
+    setShowMeasurementModal(true)
+  }
+
+  const handleDeleteMeasurement = async (measurementId) => {
+    if (window.confirm('Tem certeza que deseja excluir esta medida?')) {
+      const result = await deleteMeasurement(measurementId)
+      if (result) {
+        toast.success('Medida excluída com sucesso!')
+      } else {
+        toast.error('Erro ao excluir medida')
+      }
     }
   }
 
@@ -678,7 +709,25 @@ function App() {
                   <div className="measurements-list">
                     {measurements.slice(-3).reverse().map(m => (
                       <div key={m.id} className="measurement-item">
-                        <div className="measurement-date">{formatDate(m.data)}</div>
+                        <div className="measurement-header">
+                          <div className="measurement-date">{formatDate(m.data)}</div>
+                          <div className="measurement-actions">
+                            <button
+                              className="btn-icon-small"
+                              onClick={() => handleEditMeasurement(m)}
+                              title="Editar medidas"
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              className="btn-icon-small btn-delete"
+                              onClick={() => handleDeleteMeasurement(m.id)}
+                              title="Excluir medidas"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </div>
                         <div className="measurement-values">
                           {m.cintura && <span>Cintura: {m.cintura}cm</span>}
                           {m.quadril && <span>Quadril: {m.quadril}cm</span>}
@@ -781,7 +830,14 @@ function App() {
       )}
 
       {showMeasurementModal && (
-        <MeasurementRegistration onSave={handleSaveMeasurement} onClose={() => setShowMeasurementModal(false)} />
+        <MeasurementRegistration
+          onSave={handleSaveMeasurement}
+          onClose={() => {
+            setShowMeasurementModal(false)
+            setEditingMeasurement(null)
+          }}
+          initialData={editingMeasurement}
+        />
       )}
 
       {showSideEffectModal && (
@@ -807,6 +863,8 @@ function App() {
           }))}
           measurements={measurements}
           onClose={() => setShowHistoryModal(false)}
+          onEditMeasurement={handleEditMeasurement}
+          onDeleteMeasurement={handleDeleteMeasurement}
         />
       )}
 
