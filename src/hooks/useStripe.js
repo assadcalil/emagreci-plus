@@ -1,6 +1,8 @@
 import { useState, useCallback } from 'react'
-import { getStripe, STRIPE_PRICES, CHECKOUT_CONFIG } from '../config/stripe'
+import { STRIPE_PRICES } from '../config/stripe'
 import { useLocalStorage } from './useLocalStorage'
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4242'
 
 export function useStripe() {
   const [isLoading, setIsLoading] = useState(false)
@@ -9,78 +11,47 @@ export function useStripe() {
   const [stripeSubscriptionId, setStripeSubscriptionId] = useLocalStorage('stripeSubscriptionId', null)
 
   // Criar sessão de checkout no Stripe
-  const createCheckoutSession = useCallback(async (planId, billingPeriod = 'monthly', customerEmail = null) => {
+  const createCheckoutSession = useCallback(async (planId, billingPeriod = 'monthly', userId, userEmail) => {
     setIsLoading(true)
     setError(null)
 
     try {
-      const stripe = await getStripe()
-      if (!stripe) {
-        throw new Error('Stripe não foi inicializado corretamente')
-      }
-
       const priceId = STRIPE_PRICES[planId]?.[billingPeriod]
       if (!priceId) {
         throw new Error(`Plano ${planId} com período ${billingPeriod} não encontrado`)
       }
 
-      // Em produção, você criaria a sessão no backend
-      // Por enquanto, vamos simular com Stripe Checkout direto
-
-      // Simular criação de sessão (em produção, isso viria do backend)
-      const sessionConfig = {
-        lineItems: [
-          {
-            price: priceId,
-            quantity: 1,
-          },
-        ],
-        mode: CHECKOUT_CONFIG.mode,
-        successUrl: CHECKOUT_CONFIG.successUrl,
-        cancelUrl: CHECKOUT_CONFIG.cancelUrl,
-        allowPromotionCodes: CHECKOUT_CONFIG.allowPromotionCodes,
-        billingAddressCollection: CHECKOUT_CONFIG.billingAddressCollection,
+      if (!userId || !userEmail) {
+        throw new Error('User ID e email são obrigatórios')
       }
 
-      if (customerEmail) {
-        sessionConfig.customerEmail = customerEmail
+      // Criar sessão de checkout no backend
+      const response = await fetch(`${API_URL}/create-checkout-session`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          priceId,
+          userId,
+          userEmail,
+          planId
+        })
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Erro ao criar sessão de checkout')
       }
 
-      if (stripeCustomerId) {
-        sessionConfig.customer = stripeCustomerId
-      }
+      const { url } = await response.json()
 
-      // Em produção real, você faria:
-      // const response = await fetch('/api/create-checkout-session', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ priceId, customerEmail, customerId: stripeCustomerId })
-      // })
-      // const { sessionId } = await response.json()
-      // const { error } = await stripe.redirectToCheckout({ sessionId })
+      // Redirecionar para o Stripe Checkout
+      window.location.href = url
 
-      // Para teste/desenvolvimento, podemos usar redirect direto
-      // Nota: Em produção real, SEMPRE crie sessões no backend por segurança
-
-      console.log('Configuração de checkout:', sessionConfig)
-
-      // Simular redirecionamento para checkout
-      // Em produção, descomente o código abaixo:
-      /*
-      const { error: stripeError } = await stripe.redirectToCheckout(sessionConfig)
-
-      if (stripeError) {
-        throw stripeError
-      }
-      */
-
-      // Para demo, retornamos informações da sessão
       return {
         success: true,
         planId,
         billingPeriod,
-        priceId,
-        message: 'Sessão de checkout configurada. Em produção, você seria redirecionado para o Stripe.'
+        priceId
       }
 
     } catch (err) {
@@ -90,7 +61,7 @@ export function useStripe() {
     } finally {
       setIsLoading(false)
     }
-  }, [stripeCustomerId])
+  }, [])
 
   // Verificar status da assinatura
   const checkSubscriptionStatus = useCallback(async () => {
@@ -144,31 +115,36 @@ export function useStripe() {
   }, [stripeSubscriptionId, setStripeSubscriptionId])
 
   // Abrir portal do cliente Stripe (para gerenciar assinatura)
-  const openCustomerPortal = useCallback(async () => {
-    if (!stripeCustomerId) {
+  const openCustomerPortal = useCallback(async (customerId) => {
+    if (!customerId) {
       setError('Nenhum cliente Stripe associado')
-      return
+      return { success: false, error: 'Nenhum cliente Stripe associado' }
     }
 
     setIsLoading(true)
     try {
-      // Em produção:
-      // const response = await fetch('/api/create-portal-session', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ customerId: stripeCustomerId })
-      // })
-      // const { url } = await response.json()
-      // window.location.href = url
+      const response = await fetch(`${API_URL}/create-portal-session`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customerId })
+      })
 
-      console.log('Abrindo portal do cliente Stripe...')
-      // Para demo, apenas log
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Erro ao criar sessão do portal')
+      }
+
+      const { url } = await response.json()
+      window.location.href = url
+
+      return { success: true }
     } catch (err) {
       setError(err.message)
+      return { success: false, error: err.message }
     } finally {
       setIsLoading(false)
     }
-  }, [stripeCustomerId])
+  }, [])
 
   // Processar webhook de sucesso (chamado após redirecionamento)
   const handleCheckoutSuccess = useCallback(async (sessionId) => {
