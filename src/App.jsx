@@ -17,6 +17,7 @@ import InjectionMap from './components/InjectionMap'
 import ProgressPhotos from './components/ProgressPhotos'
 import LandingPage from './components/LandingPage'
 import AuthScreen from './components/AuthScreen'
+import CommunityChat from './components/CommunityChat'
 import { ToastContainer } from './components/Toast'
 import { useToast } from './hooks/useToast'
 import { useAuth } from './hooks/useAuth'
@@ -29,6 +30,7 @@ import {
   useSupabaseGoals,
   useSupabaseSubscription
 } from './hooks/useSupabaseData'
+import { useCommunityChat } from './hooks/useCommunityChat'
 import { quizQuestions } from './data/quizData'
 import { PLANS } from './hooks/useSubscription'
 import './App.css'
@@ -82,6 +84,15 @@ function App() {
     isSubscribed,
     getDaysRemaining
   } = useSupabaseSubscription(user?.id)
+
+  // Community Chat
+  const {
+    messages: communityMessages,
+    sendMessage: sendCommunityMessage,
+    shareResult: shareCommunityResult,
+    likeMessage: likeCommunityMessage,
+    loading: communityLoading
+  } = useCommunityChat(user?.id)
 
   // Toast notifications
   const toast = useToast()
@@ -529,6 +540,12 @@ function App() {
           >
             🎯 Metas
           </button>
+          <button
+            className={`view-tab ${activeView === 'community' ? 'active' : ''} ${!checkAccess('community') ? 'locked' : ''}`}
+            onClick={() => checkAccess('community') ? setActiveView('community') : toast.warning('Faça upgrade para o plano Premium')}
+          >
+            💬 Comunidade
+          </button>
         </div>
 
         {/* Dashboard View */}
@@ -684,6 +701,36 @@ function App() {
             onDeleteGoal={deleteGoal}
             currentWeight={currentWeight}
             initialWeight={parseFloat(answers.pesoAtual || profile?.peso_inicial || 0)}
+          />
+        )}
+
+        {/* Community View */}
+        {activeView === 'community' && checkAccess('community') && (
+          <CommunityChat
+            messages={communityMessages}
+            onSendMessage={(content) => {
+              sendCommunityMessage(content, userName)
+                .then(result => {
+                  if (!result.success) {
+                    toast.error('Erro ao enviar mensagem')
+                  }
+                })
+            }}
+            onShareResult={(message, weightLossValue) => {
+              shareCommunityResult(userName, weightLossValue, message)
+                .then(result => {
+                  if (result.success) {
+                    toast.success('Resultado compartilhado com sucesso! 🎉')
+                  } else {
+                    toast.error('Erro ao compartilhar resultado')
+                  }
+                })
+            }}
+            onLikeMessage={likeCommunityMessage}
+            currentUserId={user?.id}
+            userName={userName}
+            weightLoss={parseFloat(answers.pesoAtual || profile?.peso_inicial || 0) - currentWeight}
+            loading={communityLoading}
           />
         )}
       </div>

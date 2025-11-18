@@ -283,6 +283,7 @@ export function useSupabaseSideEffects(userId) {
         .insert({
           user_id: userId,
           data: effect.data,
+          horario: effect.horario,
           tipo: effect.tipo,
           tipo_label: effect.tipoLabel,
           tipo_icon: effect.tipoIcon,

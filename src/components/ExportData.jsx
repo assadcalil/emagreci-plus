@@ -40,7 +40,7 @@ function ExportData({ profile, doses, weights, sideEffects, measurements, onClos
       csv += 'EFEITOS COLATERAIS\n'
       csv += 'Data,Horário,Tipo,Intensidade,Duração,Observações\n'
       sideEffects.forEach(e => {
-        csv += `${e.data},${e.horario},${e.tipoLabel},${e.intensidade}/5,${e.duracao},"${e.observacoes || ''}"\n`
+        csv += `${e.data},${e.horario || ''},${e.tipo_label || e.tipoLabel},${e.intensidade}/5,${e.duracao},"${e.observacoes || ''}"\n`
       })
       csv += '\n'
     }
@@ -129,7 +129,7 @@ Variação: ${weightLoss > 0 ? '-' : '+'}${Math.abs(weightLoss).toFixed(1)} kg (
 `
       const recentEffects = sideEffects.slice(-5).reverse()
       recentEffects.forEach(e => {
-        report += `• ${e.data} - ${e.tipoLabel} (Intensidade: ${e.intensidade}/5)\n`
+        report += `• ${e.data} - ${e.tipo_label || e.tipoLabel} (Intensidade: ${e.intensidade}/5)\n`
         report += `  Duração: ${e.duracao}\n`
         if (e.observacoes) report += `  Obs: ${e.observacoes}\n`
       })
@@ -361,16 +361,17 @@ Apresente-o ao seu médico para acompanhamento do tratamento.
       // Group effects by type
       const effectsByType = {}
       sideEffects.forEach(e => {
-        if (!effectsByType[e.tipoLabel]) {
-          effectsByType[e.tipoLabel] = {
+        const label = e.tipo_label || e.tipoLabel
+        if (!effectsByType[label]) {
+          effectsByType[label] = {
             count: 0,
             totalIntensity: 0,
             maxIntensity: 0
           }
         }
-        effectsByType[e.tipoLabel].count++
-        effectsByType[e.tipoLabel].totalIntensity += e.intensidade
-        effectsByType[e.tipoLabel].maxIntensity = Math.max(effectsByType[e.tipoLabel].maxIntensity, e.intensidade)
+        effectsByType[label].count++
+        effectsByType[label].totalIntensity += e.intensidade
+        effectsByType[label].maxIntensity = Math.max(effectsByType[label].maxIntensity, e.intensidade)
       })
 
       const sortedEffects = Object.entries(effectsByType)
@@ -624,8 +625,8 @@ Apresente-o ao seu médico para acompanhamento do tratamento.
               ${sideEffects.slice().reverse().map(e => `
                 <tr>
                   <td>${format(new Date(e.data), 'dd/MM/yyyy')}</td>
-                  <td>${e.horario}</td>
-                  <td><strong>${e.tipoLabel}</strong></td>
+                  <td>${e.horario || '-'}</td>
+                  <td><strong>${e.tipo_label || e.tipoLabel}</strong></td>
                   <td style="color: ${e.intensidade >= 4 ? '#e53e3e' : e.intensidade >= 3 ? '#dd6b20' : '#38a169'}"><strong>${e.intensidade}/5</strong></td>
                   <td>${e.duracao}</td>
                   <td>${e.observacoes || '-'}</td>
