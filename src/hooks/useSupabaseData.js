@@ -240,7 +240,56 @@ export function useSupabaseMeasurements(userId) {
     }
   }, [userId])
 
-  return { measurements, loading, addMeasurement }
+  const updateMeasurement = useCallback(async (id, measurement) => {
+    if (!userId) return null
+
+    try {
+      const { data, error } = await supabase
+        .from('measurements')
+        .update({
+          data: measurement.data,
+          cintura: measurement.cintura,
+          quadril: measurement.quadril,
+          braco: measurement.braco,
+          coxa: measurement.coxa,
+          peito: measurement.peito
+        })
+        .eq('id', id)
+        .eq('user_id', userId) // Segurança adicional
+        .select()
+        .single()
+
+      if (error) throw error
+
+      setMeasurements(prev => prev.map(m => m.id === id ? data : m))
+      return data
+    } catch (err) {
+      console.error('Error updating measurement:', err)
+      return null
+    }
+  }, [userId])
+
+  const deleteMeasurement = useCallback(async (id) => {
+    if (!userId) return false
+
+    try {
+      const { error } = await supabase
+        .from('measurements')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', userId) // Segurança adicional
+
+      if (error) throw error
+
+      setMeasurements(prev => prev.filter(m => m.id !== id))
+      return true
+    } catch (err) {
+      console.error('Error deleting measurement:', err)
+      return false
+    }
+  }, [userId])
+
+  return { measurements, loading, addMeasurement, updateMeasurement, deleteMeasurement }
 }
 
 // Side Effects Hook

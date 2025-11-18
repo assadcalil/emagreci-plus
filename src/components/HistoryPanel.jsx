@@ -3,7 +3,7 @@ import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import './HistoryPanel.css'
 
-function HistoryPanel({ doses, weights, sideEffects, measurements, onClose }) {
+function HistoryPanel({ doses, weights, sideEffects, measurements, onClose, onEditMeasurement, onDeleteMeasurement }) {
   const [activeTab, setActiveTab] = useState('todos')
   const [searchTerm, setSearchTerm] = useState('')
   const [dateFilter, setDateFilter] = useState('all')
@@ -200,9 +200,32 @@ function HistoryPanel({ doses, weights, sideEffects, measurements, onClose }) {
             filteredRecords.map(record => (
               <div key={record.id} className={`history-item history-${record.type}`}>
                 <div className="history-item-header">
-                  <span className="history-icon">{record.icon}</span>
-                  <span className="history-label">{record.label}</span>
-                  <span className="history-date">{formatRecordDate(record.date)}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span className="history-icon">{record.icon}</span>
+                    <span className="history-label">{record.label}</span>
+                    <span className="history-date">{formatRecordDate(record.date)}</span>
+                  </div>
+                  {record.type === 'measurement' && onEditMeasurement && onDeleteMeasurement && (
+                    <div className="history-item-actions">
+                      <button
+                        className="btn-icon-small"
+                        onClick={() => {
+                          onEditMeasurement(record)
+                          onClose()
+                        }}
+                        title="Editar medidas"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        className="btn-icon-small btn-delete"
+                        onClick={() => onDeleteMeasurement(record.id)}
+                        title="Excluir medidas"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  )}
                 </div>
                 {renderRecordDetails(record)}
                 {record.observacoes && (
