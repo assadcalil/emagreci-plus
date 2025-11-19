@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { validateEmail, validatePassword, validateName } from '../utils/validation'
 import './AuthScreen.css'
 
 const AuthScreen = ({ onAuth, loading, error }) => {
@@ -9,9 +10,22 @@ const AuthScreen = ({ onAuth, loading, error }) => {
   const [nome, setNome] = useState('')
   const [formError, setFormError] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
+  const [passwordStrength, setPasswordStrength] = useState(0)
 
-  const validateEmail = (email) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  const calculatePasswordStrength = (pwd) => {
+    let strength = 0
+    if (pwd.length >= 8) strength++
+    if (pwd.length >= 12) strength++
+    if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) strength++
+    if (/[0-9]/.test(pwd)) strength++
+    if (/[^a-zA-Z0-9]/.test(pwd)) strength++
+    return Math.min(strength, 4)
+  }
+
+  const handlePasswordChange = (pwd) => {
+    setPassword(pwd)
+    setPasswordStrength(calculatePasswordStrength(pwd))
+    setFormError('')
   }
 
   const handleSubmit = async (e) => {
@@ -19,13 +33,15 @@ const AuthScreen = ({ onAuth, loading, error }) => {
     setFormError('')
     setSuccessMessage('')
 
-    if (!email || !validateEmail(email)) {
-      setFormError('Por favor, insira um email válido')
+    // Validar email
+    const emailValidation = validateEmail(email)
+    if (!emailValidation.valid) {
+      setFormError(emailValidation.error)
       return
     }
 
     if (mode === 'forgot') {
-      const result = await onAuth('forgot', { email })
+      const result = await onAuth('forgot', { email: email.trim() })
       if (result.success) {
         setSuccessMessage('Email de recuperação enviado! Verifique sua caixa de entrada.')
         setMode('login')
@@ -35,16 +51,21 @@ const AuthScreen = ({ onAuth, loading, error }) => {
       return
     }
 
-    if (!password || password.length < 6) {
-      setFormError('A senha deve ter pelo menos 6 caracteres')
+    // Validar senha
+    const passwordValidation = validatePassword(password)
+    if (!passwordValidation.valid) {
+      setFormError(passwordValidation.error)
       return
     }
 
     if (mode === 'signup') {
-      if (!nome || nome.trim().length < 2) {
-        setFormError('Por favor, insira seu nome completo')
+      // Validar nome
+      const nameValidation = validateName(nome)
+      if (!nameValidation.valid) {
+        setFormError(nameValidation.error)
         return
       }
+
       if (password !== confirmPassword) {
         setFormError('As senhas não coincidem')
         return
@@ -52,7 +73,7 @@ const AuthScreen = ({ onAuth, loading, error }) => {
     }
 
     const result = await onAuth(mode, {
-      email,
+      email: email.trim(),
       password,
       nome: nome.trim()
     })
@@ -115,11 +136,28 @@ const AuthScreen = ({ onAuth, loading, error }) => {
                 type="password"
                 id="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Mínimo 6 caracteres"
+                onChange={(e) => handlePasswordChange(e.target.value)}
+                placeholder={mode === 'signup' ? 'Mínimo 8 caracteres com maiúsculas, minúsculas e números' : 'Digite sua senha'}
                 required
-                minLength={6}
+                minLength={8}
               />
+              {mode === 'signup' && password && (
+                <div className="password-strength">
+                  <div className="strength-bar">
+                    <div
+                      className={`strength-fill strength-${passwordStrength}`}
+                      style={{ width: `${(passwordStrength / 4) * 100}%` }}
+                    />
+                  </div>
+                  <span className="strength-label">
+                    {passwordStrength === 0 && 'Muito fraca'}
+                    {passwordStrength === 1 && 'Fraca'}
+                    {passwordStrength === 2 && 'Razoável'}
+                    {passwordStrength === 3 && 'Boa'}
+                    {passwordStrength === 4 && 'Excelente'}
+                  </span>
+                </div>
+              )}
             </div>
           )}
 

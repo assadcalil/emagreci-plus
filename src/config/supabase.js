@@ -15,7 +15,9 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 export const getCurrentUser = async () => {
   const { data: { user }, error } = await supabase.auth.getUser()
   if (error) {
-    console.error('Error getting user:', error)
+    if (import.meta.env.DEV) {
+      console.error('Error getting user:', error)
+    }
     return null
   }
   return user
@@ -25,7 +27,9 @@ export const getCurrentUser = async () => {
 export const getSession = async () => {
   const { data: { session }, error } = await supabase.auth.getSession()
   if (error) {
-    console.error('Error getting session:', error)
+    if (import.meta.env.DEV) {
+      console.error('Error getting session:', error)
+    }
     return null
   }
   return session

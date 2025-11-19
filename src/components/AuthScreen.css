@@ -204,6 +204,86 @@
   font-size: 0.8rem;
 }
 
+/* Password Strength Indicator */
+.password-strength {
+  margin-top: 0.5rem;
+}
+
+.strength-bar {
+  height: 4px;
+  background: var(--border-color);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 0.4rem;
+}
+
+.strength-fill {
+  height: 100%;
+  transition: all 0.3s ease;
+  border-radius: 2px;
+}
+
+.strength-fill.strength-0 {
+  width: 0%;
+  background: var(--danger);
+}
+
+.strength-fill.strength-1 {
+  background: var(--danger);
+}
+
+.strength-fill.strength-2 {
+  background: var(--warning);
+}
+
+.strength-fill.strength-3 {
+  background: #38a169;
+}
+
+.strength-fill.strength-4 {
+  background: var(--success);
+}
+
+.strength-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.strength-label {
+  color: var(--text-secondary);
+}
+
+.password-strength:has(.strength-1) .strength-label {
+  color: var(--danger);
+}
+
+.password-strength:has(.strength-2) .strength-label {
+  color: var(--warning);
+}
+
+.password-strength:has(.strength-3) .strength-label {
+  color: #38a169;
+}
+
+.password-strength:has(.strength-4) .strength-label {
+  color: var(--success);
+}
+
+/* Input Error State */
+.form-group input.input-error {
+  border-color: var(--danger);
+}
+
+.form-group input.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(245, 101, 101, 0.2);
+}
+
+.error-text {
+  color: var(--danger);
+  font-size: 0.85rem;
+  margin-top: 0.3rem;
+}
+
 /* Responsive */
 @media (max-width: 480px) {
   .auth-container {

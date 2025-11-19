@@ -270,7 +270,9 @@ function App() {
             toast.error('Erro ao salvar perfil. Tente novamente.')
           }
         } catch (err) {
-          console.error('Error saving profile:', err)
+          if (import.meta.env.DEV) {
+            console.error('Error saving profile:', err)
+          }
           toast.error('Erro ao salvar perfil')
         }
       }
