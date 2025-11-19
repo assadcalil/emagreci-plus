@@ -19,8 +19,11 @@ export function useAuth() {
         setSession(currentSession)
         setUser(currentSession?.user ?? null)
       } catch (err) {
-        console.error('Auth init error:', err)
-        setError(err.message)
+        // Don't log sensitive auth errors in production
+        if (import.meta.env.DEV) {
+          console.error('Auth init error:', err)
+        }
+        setError('Erro ao inicializar autenticação')
       } finally {
         setLoading(false)
       }
@@ -31,7 +34,6 @@ export function useAuth() {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, newSession) => {
-        console.log('Auth state changed:', event)
         setSession(newSession)
         setUser(newSession?.user ?? null)
         setLoading(false)
@@ -65,9 +67,12 @@ export function useAuth() {
 
       return { success: true, data }
     } catch (err) {
-      console.error('Sign up error:', err)
-      setError(err.message)
-      return { success: false, error: err.message }
+      if (import.meta.env.DEV) {
+        console.error('Sign up error:', err)
+      }
+      const errorMsg = err.message || 'Erro ao criar conta'
+      setError(errorMsg)
+      return { success: false, error: errorMsg }
     } finally {
       setLoading(false)
     }
@@ -88,9 +93,12 @@ export function useAuth() {
 
       return { success: true, data }
     } catch (err) {
-      console.error('Sign in error:', err)
-      setError(err.message)
-      return { success: false, error: err.message }
+      if (import.meta.env.DEV) {
+        console.error('Sign in error:', err)
+      }
+      const errorMsg = err.message || 'Erro ao fazer login'
+      setError(errorMsg)
+      return { success: false, error: errorMsg }
     } finally {
       setLoading(false)
     }
@@ -109,9 +117,12 @@ export function useAuth() {
       setSession(null)
       return { success: true }
     } catch (err) {
-      console.error('Sign out error:', err)
-      setError(err.message)
-      return { success: false, error: err.message }
+      if (import.meta.env.DEV) {
+        console.error('Sign out error:', err)
+      }
+      const errorMsg = 'Erro ao sair da conta'
+      setError(errorMsg)
+      return { success: false, error: errorMsg }
     } finally {
       setLoading(false)
     }
@@ -131,9 +142,12 @@ export function useAuth() {
 
       return { success: true }
     } catch (err) {
-      console.error('Reset password error:', err)
-      setError(err.message)
-      return { success: false, error: err.message }
+      if (import.meta.env.DEV) {
+        console.error('Reset password error:', err)
+      }
+      const errorMsg = 'Erro ao enviar email de recuperação'
+      setError(errorMsg)
+      return { success: false, error: errorMsg }
     } finally {
       setLoading(false)
     }
@@ -153,9 +167,12 @@ export function useAuth() {
 
       return { success: true }
     } catch (err) {
-      console.error('Update password error:', err)
-      setError(err.message)
-      return { success: false, error: err.message }
+      if (import.meta.env.DEV) {
+        console.error('Update password error:', err)
+      }
+      const errorMsg = 'Erro ao atualizar senha'
+      setError(errorMsg)
+      return { success: false, error: errorMsg }
     } finally {
       setLoading(false)
     }
@@ -175,9 +192,12 @@ export function useAuth() {
 
       return { success: true, data }
     } catch (err) {
-      console.error('Update metadata error:', err)
-      setError(err.message)
-      return { success: false, error: err.message }
+      if (import.meta.env.DEV) {
+        console.error('Update metadata error:', err)
+      }
+      const errorMsg = 'Erro ao atualizar dados do usuário'
+      setError(errorMsg)
+      return { success: false, error: errorMsg }
     } finally {
       setLoading(false)
     }

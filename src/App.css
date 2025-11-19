@@ -5,23 +5,50 @@
 }
 
 :root {
-  --primary: #38b2ac;
-  --primary-light: #4fd1c5;
-  --primary-dark: #319795;
-  --secondary: #38b2ac;
-  --accent: #ed8936;
-  --success: #48bb78;
-  --warning: #ecc94b;
-  --danger: #f56565;
-  --background: #f7fafc;
+  /* Primary Colors - Teal/Turquoise for health & wellness */
+  --primary: #06b6d4;
+  --primary-light: #22d3ee;
+  --primary-dark: #0891b2;
+  --primary-gradient: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+
+  /* Secondary Colors */
+  --secondary: #06b6d4;
+  --accent: #f59e0b;
+  --accent-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+
+  /* Status Colors */
+  --success: #10b981;
+  --success-light: #34d399;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --danger-light: #f87171;
+  --info: #3b82f6;
+
+  /* Neutral Colors */
+  --background: #f8fafc;
   --surface: #ffffff;
   --card-background: #ffffff;
-  --text-primary: #1a202c;
-  --text-secondary: #718096;
-  --text-muted: #a0aec0;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
   --border: #e2e8f0;
   --border-color: #e2e8f0;
-  --shadow: rgba(0, 0, 0, 0.1);
+  --border-light: #f1f5f9;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+  /* Feature Colors */
+  --dose-color: #8b5cf6;
+  --weight-color: #10b981;
+  --measure-color: #f59e0b;
+  --effect-color: #ef4444;
+  --nutrition-color: #059669;
+  --photos-color: #6366f1;
 }
 
 body {
@@ -165,22 +192,22 @@ body {
 
 /* BUTTONS - Profissionais e Consistentes */
 .btn-primary {
-  background: var(--secondary);
+  background: var(--primary-gradient);
   color: white;
   border: none;
   padding: 0.9rem 2.5rem;
   font-size: 1rem;
   font-weight: 600;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 14px rgba(56, 178, 172, 0.4);
+  box-shadow: 0 4px 14px rgba(6, 182, 212, 0.3);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(56, 178, 172, 0.5);
-  background: #319795;
+  box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
+  filter: brightness(1.05);
 }
 
 .btn-primary:active {
@@ -508,8 +535,7 @@ body {
 }
 
 .btn-action:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--shadow);
+  transform: translateY(-3px) scale(1.02);
 }
 
 .btn-action.locked {
@@ -536,33 +562,63 @@ body {
 }
 
 .btn-dose {
-  background: var(--primary);
+  background: linear-gradient(135deg, var(--dose-color) 0%, #7c3aed 100%);
   color: white;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.btn-dose:hover:not(.locked) {
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
 }
 
 .btn-weight {
-  background: var(--success);
+  background: linear-gradient(135deg, var(--weight-color) 0%, #059669 100%);
   color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-weight:hover:not(.locked) {
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
 }
 
 .btn-measure {
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--measure-color) 0%, #d97706 100%);
   color: white;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.btn-measure:hover:not(.locked) {
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
 }
 
 .btn-effect {
-  background: var(--danger);
+  background: linear-gradient(135deg, var(--effect-color) 0%, #dc2626 100%);
   color: white;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-effect:hover:not(.locked) {
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
 }
 
 .btn-nutrition {
-  background: #38a169;
+  background: linear-gradient(135deg, var(--nutrition-color) 0%, #047857 100%);
   color: white;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+}
+
+.btn-nutrition:hover:not(.locked) {
+  box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4);
 }
 
 .btn-photos {
-  background: #805ad5;
+  background: linear-gradient(135deg, var(--photos-color) 0%, #4f46e5 100%);
   color: white;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.btn-photos:hover:not(.locked) {
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
 }
 
 /* View Tabs - Elegantes */
@@ -595,8 +651,9 @@ body {
 }
 
 .view-tab.active {
-  background: var(--secondary);
+  background: var(--primary-gradient);
   color: white;
+  box-shadow: 0 2px 8px rgba(6, 182, 212, 0.25);
 }
 
 .view-tab.locked {
@@ -646,14 +703,33 @@ body {
   display: flex;
   align-items: center;
   gap: 1rem;
-  box-shadow: 0 1px 3px var(--shadow);
-  transition: all 0.3s;
+  box-shadow: var(--shadow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.info-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--primary-gradient);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
 }
 
 .info-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--shadow);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-light);
+}
+
+.info-card:hover::before {
+  transform: scaleX(1);
 }
 
 .card-icon {
@@ -690,8 +766,13 @@ body {
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 1px 3px var(--shadow);
+  box-shadow: var(--shadow);
   border: 1px solid var(--border);
+  transition: box-shadow 0.3s ease;
+}
+
+.section:hover {
+  box-shadow: var(--shadow-md);
 }
 
 .section h2 {
@@ -734,7 +815,13 @@ body {
   background: var(--background);
   border-radius: 8px;
   padding: 1rem;
-  border-left: 3px solid var(--secondary);
+  border-left: 3px solid var(--dose-color);
+  transition: all 0.2s ease;
+}
+
+.dose-item:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
 }
 
 .dose-header {
@@ -773,6 +860,14 @@ body {
   background: var(--background);
   padding: 1rem;
   border-radius: 8px;
+  border-left: 3px solid var(--measure-color);
+  transition: all 0.2s ease;
+}
+
+.measurement-item:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
+  background: var(--surface);
 }
 
 .measurement-header {
@@ -823,6 +918,14 @@ body {
   background: var(--background);
   padding: 0.8rem;
   border-radius: 8px;
+  border-left: 3px solid var(--effect-color);
+  transition: all 0.2s ease;
+}
+
+.effect-item:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
+  background: var(--surface);
 }
 
 .effect-icon {
