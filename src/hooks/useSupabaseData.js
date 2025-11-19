@@ -163,7 +163,8 @@ export function useSupabaseWeights(userId) {
         .insert({
           user_id: userId,
           data: weight.data,
-          peso: weight.peso
+          peso: weight.peso,
+          observacoes: weight.observacoes || null
         })
         .select()
         .single()
@@ -225,7 +226,9 @@ export function useSupabaseMeasurements(userId) {
           quadril: measurement.quadril,
           braco: measurement.braco,
           coxa: measurement.coxa,
-          peito: measurement.peito
+          peito: measurement.peito,
+          pescoco: measurement.pescoco || null,
+          observacoes: measurement.observacoes || null
         })
         .select()
         .single()
@@ -252,7 +255,9 @@ export function useSupabaseMeasurements(userId) {
           quadril: measurement.quadril,
           braco: measurement.braco,
           coxa: measurement.coxa,
-          peito: measurement.peito
+          peito: measurement.peito,
+          pescoco: measurement.pescoco || null,
+          observacoes: measurement.observacoes || null
         })
         .eq('id', id)
         .eq('user_id', userId) // Segurança adicional
